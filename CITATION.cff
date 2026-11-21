@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: Please cite the preprint and this replay supplement.
+title: 'Replay supplement for Explicit positive-temperature pair long-range order in Penson-Kolb-Hubbard models'
+authors:
+  - family-names: Rens
+    given-names: Davis
+    affiliation: SuperMatics Inc.
+    orcid: 'https://orcid.org/0000-0001-5839-5197'
+doi: 10.5281/zenodo.24428101
+version: 1.0.0
+license: Apache-2.0
+references:
+  - type: article
+    status: preprint
+    title: 'Explicit positive-temperature pair long-range order in Penson-Kolb-Hubbard models'
+    authors:
+      - family-names: Rens
+        given-names: Davis
+        affiliation: SuperMatics Inc.
+        orcid: 'https://orcid.org/0000-0001-5839-5197'
+    year: 2026
+    doi: 10.5281/zenodo.24428099
+  - type: article
+    status: preprint
+    title: 'Thermal eta-pair order at exact half filling with on-site repulsion'
+    authors:
+      - family-names: Rens
+        given-names: Davis
+        affiliation: SuperMatics Inc.
+        orcid: 'https://orcid.org/0000-0001-5839-5197'
+    year: 2026
+    doi: 10.5281/zenodo.24364883
+  - type: software
+    title: 'Supplement to Thermal eta-pair order at exact half filling with on-site repulsion'
+    authors:
+      - family-names: Rens
+        given-names: Davis
+        affiliation: SuperMatics Inc.
+        orcid: 'https://orcid.org/0000-0001-5839-5197'
+    year: 2026
+    doi: 10.5281/zenodo.24364885

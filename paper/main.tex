@@ -1,0 +1,775 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[hidelinks,pdfusetitle]{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{booktabs}
+
+\newcommand{\paperdoi}{10.5281/zenodo.24428099}
+\newcommand{\suppdoi}{10.5281/zenodo.24428101}
+\newcommand{\DOI}[1]{\edef\doival{#1}\mbox{\href{https://doi.org/\doival}{\expandafter\nolinkurl\expandafter{\doival}}}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\spec}{spec}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbC}{\mathbb{C}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\bbN}{\mathbb{N}}
+
+\title{Explicit positive-temperature pair long-range order in Penson-Kolb-Hubbard models}
+\author{Davis Rens\\
+SuperMatics Inc.\\
+ORCID: \href{https://orcid.org/0000-0001-5839-5197}{0000-0001-5839-5197}}
+\date{November 21, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We establish explicit, constructive positive-temperature lower bounds on onsite pair off-diagonal long-range order (ODLRO) on the full $4^{|\Lambda|}$-dimensional fermion Fock space of three-dimensional Penson-Kolb-Hubbard models in the thermodynamic limit. Two parameter regimes are covered for all temperatures $0 < k_B T \le T_0$ by a single finite-temperature variational and entropic certification: (i) the zero-hopping ($t=0$) Penson-Kolb-Hubbard model with pair-hopping amplitude $J > 0$ and on-site Hubbard coupling $U \ge -0.5J$, spanning weak repulsion as well as attraction up to $T_0/J = 1.170$; and (ii) the $\pi$-flux Penson-Kolb-Hubbard model with nonzero single-electron hopping amplitude $|\kappa|/g \le 0.50$ and on-site attraction $U \ge 0$. Replacing a non-constructive compactness contradiction in Koma (arXiv:2201.13135v2), our proof combines Majorana reflection positivity in the presence of arbitrary on-site Hubbard interactions, a corrected Gaussian domination infrared bound (fixing a factor-of-two slip in Koma's printed equations and confirming the violation by exact diagonalization on a four-site ring), a vacancy-controlled Cauchy-Schwarz bound on single-electron hopping, a KLS-weighted infrared sum rule, a vacancy-conditioned von Neumann entropy bound, an exact four-state dimer trial state, and an exact seven-site star operator norm bound. Fifty-digit outward-rounded interval arithmetic certifies explicit floors $T_0/J$ (ranging from $0.155$ at $U=-0.5J$ to $1.170$ at $U=100J$ for $t=0$, and up to $|\kappa|/g = 0.50$ under $\pi$-flux) together with uniform positive condensate floors $\inf_{0 < T \le T_0} m_0^2(T) > 0$. We also document three mathematical obstructions explaining why standard $0$-flux real single-electron hopping $t \ne 0$ evades Majorana reflection positivity, spin reflection positivity, and positive-temperature contour or norm perturbations; positive-temperature pair ODLRO for $0$-flux real hopping remains open. All results concern pair correlation functions of idealized lattice fermion Hamiltonians.
+\end{abstract}
+
+\section{Introduction and prior art}\label{sec:intro}
+
+Establishing off-diagonal long-range order (ODLRO) for electron pairs in three-dimensional lattice fermion models at strictly positive temperature $T > 0$ is a central problem in rigorous quantum statistical mechanics. Following the introduction of real-space pair-hopping interactions by Penson and Kolb~\cite{penson1986} and the construction of $\eta$-pairing eigenstates in Hubbard models by Yang~\cite{yang1989}, exact results on pair correlations bifurcated into two broad streams. On one side, Lieb's spin-reflection positivity~\cite{lieb1989} and the Kubo-Kishi susceptibility inequality~\cite{kubo1990} provided rigorous \emph{upper} bounds on pair correlations in the repulsive Hubbard model, while leaving positive-temperature ODLRO in the purely attractive Hubbard model ($J=0$, $t \ne 0$) open. On the other side, the infrared-bound method of Fr\"ohlich, Simon, and Spencer~\cite{frohlich1976}, Dyson, Lieb, and Simon~\cite{dyson1978}, and Kennedy, Lieb, and Shastry~\cite{kennedy1988} established $T > 0$ continuous symmetry breaking in three-dimensional spin-$1/2$ XY and Heisenberg models, which act on a two-dimensional local Hilbert space per site and omit singly occupied fermion states.
+
+Majorana reflection positivity, developed by Jaffe and Pedrocchi~\cite{jaffe2014,jaffe2015a,jaffe2015b} building on Lieb's flux theorem~\cite{lieb1994,macris1996}, unlocked spatial reflection positivity directly on the full $4^{|\Lambda|}$-dimensional fermion Fock space when single-electron hopping carries magnetic flux $\pi$ per elementary plaquette. Using this framework, Koma~\cite{koma2022} proved a qualitative existence theorem for positive-temperature pair ODLRO in the three-dimensional $\pi$-flux Penson-Kolb model at $U = 0$ and small single-electron hopping $\kappa$. Koma's argument, however, omitted the on-site Hubbard term, relied on a non-constructive compactness contradiction as $\beta \to \infty$ (Appendix~B of~\cite{koma2022}) that yields no explicit critical-temperature lower bound $T_0 > 0$, and printed a Gaussian domination constant $(2\beta g E_{p+Q})^{-1}$ in Eqs.~(6.4), (6.9), and (6.11) of~\cite{koma2022} that is smaller by a factor of two than the true bound $(\beta g E_{p+Q})^{-1}$.
+
+In an earlier preprint~\cite{rens2026eta} (accompanied by the supplement~\cite{rens2026etasupp}), the present author extended Koma's framework~\cite{koma2022} to include repulsive on-site Hubbard interactions with $\pi$-flux single-electron hopping $|\kappa|/g \le 10^{-4}$ and density couplings $\le 10^{-4}$ at low temperature $\beta d g \ge 10^4$ ($d=3$), obtaining a squared order parameter lower bound $\ge 3/1000$. That earlier work already noted that its direct Gaussian-domination normalization is a factor of two weaker than the printed route in Eqs.~(6.4), (6.9), and (6.11) of~\cite{koma2022} and did not use Koma's stronger printed constant.
+
+The present paper advances beyond both~\cite{koma2022} and~\cite{rens2026eta} in three concrete directions while keeping all assumptions explicit:
+\begin{enumerate}[label=(\alph*),leftmargin=2em]
+\item \emph{Constructive single-shot certification for all $0 < T \le T_0$:} We replace Koma's non-constructive $\beta \to \infty$ compactness step~\cite{koma2022} with an explicit finite-temperature variational, conditional-entropy, and seven-site star-norm estimate that certifies $m_0^2(T) \ge m_{\mathrm{floor}}^2 > 0$ simultaneously for \emph{all} $0 < k_B T \le T_0$, with explicit temperature floors $T_0$ of order $J$ (reaching $T_0/J = 1.170$ at $U/J = 100$ in Table~\ref{tab:t0-floors}).
+\item \emph{Larger $\pi$-flux hopping up to $|\kappa|/g = 0.50$:} By deriving an exact vacancy-controlled Cauchy-Schwarz bound $|e_{\mathrm{hop}}| \le 2\sqrt{6}|\kappa|\sqrt{r}$ alongside the free-fermion bound $2I_{\sin}|\kappa|$ and eliminating cross-site hopping terms via a momentum-averaged double commutator, we certify $T > 0$ pair ODLRO for $\pi$-flux single-electron hopping amplitudes up to $|\kappa|/g = 0.50$ (Table~\ref{tab:piflux-floors}), extending the $|\kappa|/g \le 10^{-4}$ regime of~\cite{rens2026eta} by more than three orders of magnitude.
+\item \emph{Attraction and weak repulsion at $t = 0$ on the full Fock space:} At zero single-electron hopping ($t=0$, where flux plays no role), a site-conditioning Peierls-Bogoliubov inequality bounds the vacancy density $r(\beta) \le (1 + e^{\beta U/2})^{-1}$ for all $U \in \mathbb{R}$ and certifies positive-temperature pair ODLRO across both on-site attraction ($U > 0$) and weak on-site repulsion ($U \ge -0.5J$) on the full four-state-per-site Fock space.
+\end{enumerate}
+In addition, we supply the explicit second-derivative derivation pinpointing the missing factor of two in Eq.~(6.4) of~\cite{koma2022} together with an exact-diagonalization counterexample on a four-site ring ($\dim\calF = 256$) where Koma's printed inequality is violated with ratio $1.329280 > 1$, confirming that the printed factor of two in~\cite{koma2022} is false under its own stated normalization. We also analyze three obstructions showing why standard $0$-flux real single-electron hopping $t \ne 0$ fails Majorana reflection positivity, cannot use spin reflection positivity for spatial pair infrared bounds, and resists naive norm or contour expansions around $t=0$. Positive-temperature pair ODLRO for $0$-flux real hopping $t \ne 0$ remains an open mathematical problem.
+
+\paragraph{Methodological separation and scope.}
+Every claim in this work falls into one of three distinct evidential categories, kept strictly separated in both the text and the companion verification scripts:
+\begin{itemize}[leftmargin=2em]
+\item \emph{Analytic proofs:} Operator identities, gauge equivalences, reflection positivity, Gaussian domination, double-commutator sum rules, Cauchy-Schwarz hopping bounds, conditional entropy bounds, the four-state dimer trial bound, the seven-site star operator norm bound, the vacancy partition inequality, and the $0$-flux gauge-cohomology obstruction are proved analytically for all finite tori $\Lambda$ and in the thermodynamic limit $|\Lambda| \to \infty$.
+\item \emph{Interval-certified finite arithmetic:} Five dimensionless 3D Brillouin-zone integral families ($I_W$, $I_3$, $W_3(\alpha)$, $J_{\mathrm{sq}}(\alpha)$, $I_{\sin}$) and all fifteen single-shot order-parameter lower bounds in Tables~\ref{tab:t0-floors} and~\ref{tab:piflux-floors} are verified by 50-digit outward-rounded interval arithmetic (\texttt{mpmath.iv}) with strict directed rounding down of the final floors in \texttt{replay.py}.
+\item \emph{Finite exact-diagonalization (ED) checks:} Exact matrix diagonalizations on finite fermion Fock spaces ($N = 2, 4, 7$ sites, up to $2^{14} = 16{,}384$ states) independently corroborate the algebraic identities, verify the 4-state dimer spectrum and 7-site star eigenvalue $2\sqrt{3}$, demonstrate the violation of Koma's factor-of-2 inequality on a 4-site ring, and exhibit negative eigenvalues of the $14 \times 14$ Majorana reflection-positivity Gram matrix for $0$-flux hopping on a $2 \times 2$ plaquette.
+\end{itemize}
+All theorems and numerical floors proved here concern mathematical pair correlations $\langle \Delta_x^\dagger \Delta_y \rangle_\beta$ of idealized lattice fermion Hamiltonians in the thermodynamic limit. No claim is made regarding real materials, confirmed superconductivity, or patentability. Throughout, we set $k_B = 1$ (so $\beta = 1/T$) except where $k_B T$ is written explicitly for clarity.
+
+The rest of the paper is organized as follows. Section~\ref{sec:model} defines the models, the ferromagnetic-to-antiferromagnetic gauge dictionary, and the local pair-subspace algebra (Lemma~\ref{lem:pair-algebra}). Section~\ref{sec:results} states the Brillouin-zone enclosures and our main theorems (Theorems~\ref{thm:t0} and~\ref{thm:piflux}), with certified floors in Tables~\ref{tab:t0-floors} and~\ref{tab:piflux-floors}. Section~\ref{sec:gd} proves reflection positivity and the corrected Gaussian domination bound (Theorem~\ref{thm:rp-gd}), documenting the factor-of-2 correction and its 4-site ED counterexample. Section~\ref{sec:sumrule} establishes the double-commutator identity (Lemma~\ref{lem:double-comm}), the hopping bound (Lemma~\ref{lem:hopping}), and the KLS-weighted infrared sum rule (Proposition~\ref{prop:kls}). Section~\ref{sec:thermo} proves the entropy, dimer variational, seven-site star, and vacancy-partition bounds (Lemmas~\ref{lem:entropy}--\ref{lem:vacancy}) and completes the proofs of Theorems~\ref{thm:t0} and~\ref{thm:piflux}. Section~\ref{sec:obstructions} establishes three obstructions for $0$-flux real hopping. Section~\ref{sec:supp} provides supporting-material and disclosure statements, and Appendix~\ref{app:checks} summarizes the checks in \texttt{replay.py} and \texttt{mutants.py}.
+
+\section{Models, gauge transformations, and local pair algebra}\label{sec:model}
+
+\subsection{Full fermion Fock space and local pseudospin operators}\label{subsec:fock}
+
+Let $\Lambda = \{-L+1, -L+2, \dots, L\}^3 \subset \bbZ^3$ with $L \in \bbN$ even and $|\Lambda| = (2L)^3$ denote a three-dimensional cubic torus. Periodic boundary conditions are imposed on pair operators, while anti-periodic boundary conditions are imposed along each coordinate axis on single-electron hopping (the standard condition ensuring finite-volume Majorana reflection positivity on the torus; see~\cite{koma2022}, Section~5.1). At each site $x \in \Lambda$ and spin $\sigma \in \{\uparrow, \downarrow\}$, canonical fermion annihilation and creation operators $a_{x,\sigma}, a_{x,\sigma}^\dagger$ satisfy $\{a_{x,\sigma}, a_{y,\sigma'}^\dagger\} = \delta_{x,y}\delta_{\sigma,\sigma'}$ and $\{a_{x,\sigma}, a_{y,\sigma'}\} = 0$, acting on the full $4^{|\Lambda|}$-dimensional fermion Fock space $\calF(\Lambda) = \bigotimes_{x \in \Lambda} \calF_x$. The local four-dimensional Fock space decomposes orthogonally into the even-parity pair subspace $\calP_x$ and the odd-parity single-occupancy (vacancy) subspace $\calV_x$:
+\begin{equation}\label{eq:local-fock}
+\calF_x = \calP_x \oplus \calV_x, \qquad \calP_x := \mathrm{span}\{|0\rangle_x, |\uparrow\downarrow\rangle_x\}, \qquad \calV_x := \mathrm{span}\{|\uparrow\rangle_x, |\downarrow\rangle_x\},
+\end{equation}
+where $|\uparrow\downarrow\rangle_x := a_{x,\uparrow}^\dagger a_{x,\downarrow}^\dagger |0\rangle_x$ and $n_{x,\sigma} := a_{x,\sigma}^\dagger a_{x,\sigma}$.
+
+Following~\cite{koma2022}, define the onsite pair operators $\Delta_x := a_{x,\downarrow} a_{x,\uparrow}$ and $\Delta_x^\dagger := a_{x,\uparrow}^\dagger a_{x,\downarrow}^\dagger$, together with the three Hermitian pseudospin/charge operators
+\begin{equation}\label{eq:gamma-def}
+\Gamma_x^{(1)} := \Delta_x^\dagger + \Delta_x, \qquad \Gamma_x^{(2)} := i(\Delta_x^\dagger - \Delta_x), \qquad \Gamma_x^{(3)} := 1 - n_{x,\uparrow} - n_{x,\downarrow}.
+\end{equation}
+Because every $\Gamma_x^{(a)}$ ($a \in \{1,2,3\}$) is even in fermion parity, operators supported on distinct sites $x \ne y$ commute: $[\Gamma_x^{(a)}, \Gamma_y^{(b)}] = 0$ for all $x \ne y$ and $a,b \in \{1,2,3\}$.
+
+\begin{lemma}[Pair-subspace projector and Hubbard commutation]\label{lem:pair-algebra}
+On the local four-dimensional space $\calF_x$, let $P_{\calP_x}$ and $P_{\calV_x} = I - P_{\calP_x}$ denote the orthogonal projectors onto $\calP_x$ and $\calV_x$, respectively. Then
+\begin{gather}
+[\Gamma_x^{(1)}]^2 = [\Gamma_x^{(2)}]^2 = [\Gamma_x^{(3)}]^2 = 2 n_{x,\uparrow} n_{x,\downarrow} - n_{x,\uparrow} - n_{x,\downarrow} + 1 = P_{\calP_x} = I - P_{\calV_x}, \label{eq:proj-id}\\
+[\Gamma_x^{(1)}, \Gamma_x^{(2)}] = 2i\,\Gamma_x^{(3)}, \qquad [\Gamma_x^{(2)}, \Gamma_x^{(3)}] = 2i\,\Gamma_x^{(1)}, \qquad [\Gamma_x^{(3)}, \Gamma_x^{(1)}] = 2i\,\Gamma_x^{(2)}, \label{eq:su2-comm}\\
+\{\Gamma_x^{(a)}, \Gamma_x^{(b)}\} = 2\,\delta_{a,b}\,P_{\calP_x} \qquad (a,b \in \{1,2,3\}). \label{eq:pauli-anticomm}
+\end{gather}
+Consequently, the particle-hole symmetric on-site Hubbard interaction satisfies
+\begin{equation}\label{eq:hubbard-id}
+H_U^{(\Lambda)} := -U \sum_{x \in \Lambda} \left(n_{x,\uparrow} n_{x,\downarrow} - \frac{1}{2}(n_{x,\uparrow} + n_{x,\downarrow})\right) = \frac{U}{2} \sum_{x \in \Lambda} \left(1 - [\Gamma_x^{(1)}]^2\right) = \frac{U}{2} \sum_{x \in \Lambda} P_{\calV_x},
+\end{equation}
+and commutes identically with all pair and charge operators on $\calF(\Lambda)$:
+\begin{equation}\label{eq:hubbard-comm}
+[H_U^{(\Lambda)}, \Gamma_y^{(1)}] = [H_U^{(\Lambda)}, \Gamma_y^{(2)}] = [H_U^{(\Lambda)}, \Gamma_y^{(3)}] = 0 \qquad \forall\, y \in \Lambda,\;\forall\, U \in \bbR.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+We check~\eqref{eq:proj-id}--\eqref{eq:pauli-anticomm} directly on the four basis states of $\calF_x$:
+\begin{itemize}[leftmargin=2em]
+\item On $|0\rangle_x$: $n_{x,\uparrow} = n_{x,\downarrow} = 0$, so $2 n_{x,\uparrow}n_{x,\downarrow} - n_{x,\uparrow} - n_{x,\downarrow} + 1 = 1$, while $\Delta_x |0\rangle_x = 0$, $\Delta_x^\dagger |0\rangle_x = |\uparrow\downarrow\rangle_x$, $\Gamma_x^{(3)} |0\rangle_x = |0\rangle_x$, and $[\Gamma_x^{(1)}]^2 |0\rangle_x = [\Gamma_x^{(2)}]^2 |0\rangle_x = |0\rangle_x$.
+\item On $|\uparrow\downarrow\rangle_x$: $n_{x,\uparrow} = n_{x,\downarrow} = 1$, so $2(1)(1) - 1 - 1 + 1 = 1$, while $\Delta_x |\uparrow\downarrow\rangle_x = |0\rangle_x$, $\Delta_x^\dagger |\uparrow\downarrow\rangle_x = 0$, $\Gamma_x^{(3)} |\uparrow\downarrow\rangle_x = -|\uparrow\downarrow\rangle_x$, and $[\Gamma_x^{(1)}]^2 |\uparrow\downarrow\rangle_x = [\Gamma_x^{(2)}]^2 |\uparrow\downarrow\rangle_x = |\uparrow\downarrow\rangle_x$.
+\item On $|\uparrow\rangle_x$ and $|\downarrow\rangle_x$: $n_{x,\uparrow}n_{x,\downarrow} = 0$ and $n_{x,\uparrow} + n_{x,\downarrow} = 1$, so $2(0) - 1 + 1 = 0$, while $\Delta_x |\sigma\rangle_x = \Delta_x^\dagger |\sigma\rangle_x = \Gamma_x^{(3)} |\sigma\rangle_x = 0$, whence $[\Gamma_x^{(a)}]^2 |\sigma\rangle_x = 0$ for $a \in \{1,2,3\}$.
+\end{itemize}
+Thus $[\Gamma_x^{(a)}]^2 = P_{\calP_x} = I - P_{\calV_x}$ for $a \in \{1,2,3\}$, proving~\eqref{eq:proj-id} and~\eqref{eq:hubbard-id} (since $2n_{x,\uparrow}n_{x,\downarrow} - n_{x,\uparrow} - n_{x,\downarrow} + 1 = 1 - P_{\calV_x}$ rearranges to $-(n_{x,\uparrow}n_{x,\downarrow} - \frac{1}{2}(n_{x,\uparrow}+n_{x,\downarrow})) = \frac{1}{2}(1 - [\Gamma_x^{(1)}]^2) = \frac{1}{2}P_{\calV_x}$). On the ordered basis $\{|\uparrow\downarrow\rangle_x, |0\rangle_x\}$ of $\calP_x$, $(\Gamma_x^{(1)}, \Gamma_x^{(2)}, -\Gamma_x^{(3)})$ act as the standard Pauli matrices $(\sigma_x, \sigma_y, \sigma_z)$, while on $\calV_x$ all three vanish, proving~\eqref{eq:su2-comm} and~\eqref{eq:pauli-anticomm}. Finally, because $\Gamma_y^{(a)} = P_{\calP_y}\Gamma_y^{(a)}P_{\calP_y}$ annihilates $\calV_y$ and preserves $\calP_y$, and $[P_{\calV_x}, \Gamma_y^{(a)}] = 0$ for $x \ne y$, we have $[P_{\calV_x}, \Gamma_y^{(a)}] = \delta_{x,y}(P_{\calV_y}\Gamma_y^{(a)} - \Gamma_y^{(a)}P_{\calV_y}) = 0$, establishing~\eqref{eq:hubbard-comm}.
+\end{proof}
+
+\subsection{Ferromagnetic and antiferromagnetic Penson-Kolb-Hubbard gauges}\label{subsec:gauges}
+
+We consider the three-dimensional Penson-Kolb-Hubbard (PKH) Hamiltonian on $\calF(\Lambda)$, expressed equivalently in the standard ferromagnetic (FM) pair-hopping gauge ($Q = (0,0,0)$) and in Koma's antiferromagnetic (AF) pair-hopping gauge ($Q = (\pi,\pi,\pi)$).
+
+\begin{enumerate}[label=\arabic*.,leftmargin=2em]
+\item \emph{Standard FM Penson-Kolb-Hubbard Hamiltonian ($J = g > 0$, $Q = (0,0,0)$):}
+\begin{equation}\label{eq:H-FM}
+H_{\mathrm{FM}}^{(\Lambda)}(J, U, \kappa) := -J \sum_{x \in \Lambda} \sum_{m=1}^3 \left(\Delta_x^\dagger \Delta_{x+e_m} + \Delta_{x+e_m}^\dagger \Delta_x\right) + H_U^{(\Lambda)} + H_{\mathrm{hop},\mathrm{FM}}^{(\Lambda)}(\kappa),
+\end{equation}
+where $-J(\Delta_x^\dagger \Delta_y + \Delta_y^\dagger \Delta_x) = -\frac{J}{2}(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)})$, $H_U^{(\Lambda)}$ is~\eqref{eq:hubbard-id} (attractive for $U > 0$, repulsive for $U < 0$), and $H_{\mathrm{hop},\mathrm{FM}}^{(\Lambda)}(\kappa)$ is the real $\pi$-flux single-electron hopping operator
+\begin{equation}\label{eq:H-hop-FM}
+H_{\mathrm{hop},\mathrm{FM}}^{(\Lambda)}(\kappa) := \kappa \sum_{x \in \Lambda} \sum_{m=1}^3 \sum_{\sigma \in \{\uparrow,\downarrow\}} (-1)^{\theta_m(x)} s_{x,m}^{(\Lambda)} \left(a_{x,\sigma}^\dagger a_{x+e_m,\sigma} + a_{x+e_m,\sigma}^\dagger a_{x,\sigma}\right),
+\end{equation}
+with $\theta_1(x) := 0$, $\theta_2(x) := x^{(1)}$, $\theta_3(x) := x^{(1)} + x^{(2)}$ (so every elementary plaquette carries magnetic flux $\pi$, i.e., product of bond signs $-1$), and anti-periodic boundary sign $s_{x,m}^{(\Lambda)} = -1$ if $x^{(m)} = L$ and $+1$ otherwise.
+
+\item \emph{Koma's AF pair-hopping gauge ($g = J > 0$, $Q = (\pi,\pi,\pi)$):}
+Let $(-1)^x := (-1)^{x^{(1)}+x^{(2)}+x^{(3)}}$ and define the local unitary gauge transformation
+\begin{equation}\label{eq:U-phase}
+U_{\mathrm{phase}}^{(\Lambda)} := \prod_{x \in \Lambda} \exp\!\left(i\frac{\pi}{4}\bigl(1 - (-1)^x\bigr)(n_{x,\uparrow} + n_{x,\downarrow})\right),
+\end{equation}
+which maps $a_{x,\sigma} \mapsto i a_{x,\sigma}$ on $\Lambda_{\mathrm{odd}} := \{x \in \Lambda : (-1)^x = -1\}$ and $a_{x,\sigma} \mapsto a_{x,\sigma}$ on $\Lambda_{\mathrm{even}} := \{x \in \Lambda : (-1)^x = +1\}$. Under conjugation by $U_{\mathrm{phase}}^{(\Lambda)}$:
+\begin{equation}\label{eq:gauge-map}
+\Delta_x \mapsto (-1)^x \Delta_x, \qquad \Gamma_x^{(1)} \mapsto (-1)^x \Gamma_x^{(1)}, \qquad \Gamma_x^{(2)} \mapsto (-1)^x \Gamma_x^{(2)}, \qquad n_{x,\sigma} \mapsto n_{x,\sigma},
+\end{equation}
+and on every nearest-neighbor bond $(x, y = x+e_m)$,
+\begin{equation*}
+(U_{\mathrm{phase}}^{(\Lambda)})^\dagger (a_{x,\sigma}^\dagger a_{y,\sigma} + a_{y,\sigma}^\dagger a_{x,\sigma}) U_{\mathrm{phase}}^{(\Lambda)} = i(-1)^x(a_{x,\sigma}^\dagger a_{y,\sigma} - a_{y,\sigma}^\dagger a_{x,\sigma}).
+\end{equation*}
+Since $(-1)^x = \pm 1$ cancels around every four-bond elementary plaquette ($1 - 1 + 1 - 1 = 0$), absorbing $(-1)^x$ into the bond sign (or defining Koma's hopping with or without $(-1)^x$, both gauge-equivalent on the bipartite torus $\Lambda$ with flux $\pi$ per plaquette) yields the AF PKH Hamiltonian
+\begin{equation}\label{eq:H-AF}
+H^{(\Lambda)}(g, U, \kappa) := \frac{g}{2} \sum_{x \in \Lambda} \sum_{m=1}^3 \left(\Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} + \Gamma_x^{(2)}\Gamma_{x+e_m}^{(2)}\right) + \frac{U}{2} \sum_{x \in \Lambda} \left(1 - [\Gamma_x^{(1)}]^2\right) + H_{\mathrm{hop}}^{(\Lambda)}(\kappa),
+\end{equation}
+where Koma's purely imaginary $\pi$-flux hopping (Eq.~(2.8) of~\cite{koma2022} with anti-periodic boundary conditions $s_{x,m}^{(\Lambda)}$) is
+\begin{equation}\label{eq:H-hop-AF}
+H_{\mathrm{hop}}^{(\Lambda)}(\kappa) := i\kappa \sum_{x \in \Lambda} \sum_{m=1}^3 \sum_{\sigma \in \{\uparrow,\downarrow\}} (-1)^{\theta_m(x)} s_{x,m}^{(\Lambda)} \left(a_{x,\sigma}^\dagger a_{x+e_m,\sigma} - a_{x+e_m,\sigma}^\dagger a_{x,\sigma}\right).
+\end{equation}
+\end{enumerate}
+
+When $\kappa = 0$, $H_{\mathrm{FM}}^{(\Lambda)}(J, U, 0)$ and $H^{(\Lambda)}(J, U, 0)$ are literally conjugate via $U_{\mathrm{phase}}^{(\Lambda)}$, and the pair two-point functions satisfy $\langle \Delta_x^\dagger \Delta_y \rangle_{\beta,\mathrm{FM}}^{(\Lambda)} = (-1)^{x-y} \langle \Delta_x^\dagger \Delta_y \rangle_{\beta,\mathrm{AF}}^{(\Lambda)}$. When $\kappa \ne 0$, if~\eqref{eq:H-hop-FM} carries the bipartite factor $(-1)^x$ then $(U_{\mathrm{phase}}^{(\Lambda)})^\dagger H_{\mathrm{FM}}^{(\Lambda)}(g, U, \kappa) U_{\mathrm{phase}}^{(\Lambda)} = H^{(\Lambda)}(g, U, \kappa)$ identically; even without $(-1)^x$ in~\eqref{eq:H-hop-FM}, every elementary plaquette in both~\eqref{eq:H-hop-FM} and~\eqref{eq:H-hop-AF} has flux $\pi$, so the two hopping terms are unitarily gauge-equivalent on every bipartite lattice $\Lambda$ and produce identical thermodynamic spectra and pair-condensate bounds.
+
+Let $\langle \,\cdot\, \rangle_\beta^{(\Lambda)} := \Tr_{\calF(\Lambda)}(\cdot\, e^{-\beta H^{(\Lambda)}}) / \Tr_{\calF(\Lambda)}(e^{-\beta H^{(\Lambda)}})$ denote the Gibbs state at inverse temperature $\beta = 1/T > 0$ (with $k_B = 1$). On $\Lambda^* = \{p \in (-\pi, \pi]^3 : p^{(m)} \in \frac{\pi}{L}\bbZ\}$, define $\hat{\Gamma}_p^{(1)} := |\Lambda|^{-1/2} \sum_{x \in \Lambda} e^{-ip\cdot x} \Gamma_x^{(1)}$ and the pair structure factor $\mathfrak{g}_p := \langle \hat{\Gamma}_p^{(1)} \hat{\Gamma}_{-p}^{(1)} \rangle_\beta^{(\Lambda)}$. By spin-flip / $\eta$-phase symmetry $\Gamma_x^{(1)} \leftrightarrow \Gamma_x^{(2)}$ of $H^{(\Lambda)}(g, U, \kappa)$, we have $\langle \Delta_x^\dagger \Delta_y \rangle_\beta^{(\Lambda)} = \frac{1}{2}\langle \Gamma_x^{(1)}\Gamma_y^{(1)} \rangle_\beta^{(\Lambda)}$ for all $x \ne y$, so the thermodynamic pair condensate density is
+\begin{equation}\label{eq:m0-def}
+m_0^2(\beta) := \lim_{|\Lambda|\to\infty} \frac{1}{|\Lambda|} \mathfrak{g}_Q = \lim_{|\Lambda|\to\infty} \frac{2}{|\Lambda|^2} \sum_{x,y \in \Lambda} (-1)^{x-y} \langle \Delta_x^\dagger \Delta_y \rangle_\beta^{(\Lambda)}
+\end{equation}
+in the AF gauge (or without $(-1)^{x-y}$, at $Q = (0,0,0)$, in the FM gauge~\eqref{eq:H-FM}). Here $\lim_{|\Lambda|\to\infty}$ denotes a subsequential limit along even-side tori (or any limit point of the bounded sequence $|\Lambda|^{-1}\mathfrak{g}_Q \in [0, 1]$). Establishing $m_0^2(\beta) \ge m_{\mathrm{floor}}^2 > 0$ uniformly for all $\beta \ge \beta_0 = 1/T_0$ proves positive-temperature pair ODLRO for all $0 < T \le T_0$.
+
+\section{Main results}\label{sec:results}
+
+\subsection{Interval enclosures of three-dimensional Brillouin-zone integrals}\label{subsec:integrals}
+
+Let $u_k := \frac{1}{3}\sum_{m=1}^3 \cos k^{(m)} \in [-1, 1]$ for $k \in [-\pi, \pi]^3$, and $x_+ := \max(x, 0)$. Define the three-dimensional cubic-lattice Watson integral $I_W$, the truncated Kubo-Kishi / Kennedy-Lieb-Shastry (KLS) weight integral $W_3(\alpha)$, the squared-weight integral $J_{\mathrm{sq}}(\alpha)$ for $\alpha \in [0, 1]$, and the $\pi$-flux free-fermion bandwidth integral $I_{\sin}$ by:
+\begin{gather}
+I_W := \frac{1}{(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{d^3k}{1 - u_k} = \frac{1}{(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{d^3k}{1 + u_k}, \label{eq:IW-def}\\
+W_3(\alpha) := \frac{1}{3(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{(\alpha - u_k)_+}{1 + u_k}\,d^3k, \qquad J_{\mathrm{sq}}(\alpha) := \frac{1}{(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{(\alpha - u_k)_+^2}{1 + u_k}\,d^3k, \label{eq:W3-Jsq-def}\\
+I_{\sin} := \frac{1}{(2\pi)^3}\int_{[-\pi,\pi]^3} \sqrt{\sin^2 k^{(1)} + \sin^2 k^{(2)} + \sin^2 k^{(3)}}\,d^3k. \label{eq:Isin-def}
+\end{gather}
+
+By Watson's exact formula~\cite{watson1939} and Glasser-Zucker~\cite{glasser1977}, $I_W = \frac{\sqrt{6}}{32\pi^3}\Gamma(\frac{1}{24})\Gamma(\frac{5}{24})\Gamma(\frac{7}{24})\Gamma(\frac{11}{24})$. To evaluate $W_3(\alpha)$ and $J_{\mathrm{sq}}(\alpha)$ rigorously without singular discretization error near $u_k = -1$ ($k = (\pi,\pi,\pi)$), we use the algebraic identities
+\begin{equation*}
+(\alpha - u)^2 = (1 + \alpha)^2 - (1 + u)(2\alpha + 1 - u), \qquad \alpha - u = (1 + \alpha) - (1 + u),
+\end{equation*}
+which yield the exact singularity-subtracted representations
+\begin{align}
+J_{\mathrm{sq}}(\alpha) &= \frac{1}{(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{(\alpha - u_k)_+^2 - (1 + \alpha)^2}{1 + u_k}\,d^3k + (1 + \alpha)^2 I_W, \label{eq:Jsq-sub}\\
+W_3(\alpha) &= \frac{1}{3(2\pi)^3}\int_{[-\pi,\pi]^3} \frac{(\alpha - u_k)_+ - (1 + \alpha)}{1 + u_k}\,d^3k + \frac{1 + \alpha}{3} I_W. \label{eq:W3-sub}
+\end{align}
+On $\{k : u_k \le \alpha\}$, the difference quotients simplify analytically to $-(2\alpha + 1 - u_k)$ and $-1$, respectively, so the subtracted integrands are bounded everywhere on $[-\pi,\pi]^3$. In particular, at $\alpha = 1$, $u_k \le 1$ everywhere, so~\eqref{eq:Jsq-sub} and~\eqref{eq:W3-sub} evaluate in closed form as $J_{\mathrm{sq}}(1) = 4I_W - 3$ and $W_3(1) = (2I_W - 1)/3$.
+
+Using 50-digit interval arithmetic (\texttt{mpmath.iv}) together with the monotonicity of $\cos k^{(m)}$ and $\sin k^{(m)}$ on $[0, \pi]^3$ partitioned into $64^3 = 262{,}144$ sub-boxes for $W_3(\alpha)$ and $J_{\mathrm{sq}}(\alpha)$ and $48^3 = 110{,}592$ sub-boxes for $I_{\sin}$, Section~1 of \texttt{replay.py} establishes the following outward-rounded enclosures:
+\begin{align}
+I_W &\in [1.51638605915197,\, 1.51638605915198], \label{eq:IW-val}\\
+I_3 := \sqrt{J_{\mathrm{sq}}(0)} &\in [0.678684612,\, 0.682977160], \qquad J_{\mathrm{sq}}(0) \in [0.460612802,\, 0.466457800], \label{eq:I3-val}\\
+J_{\mathrm{sq}}(1/2) &\in [1.408389235,\, 1.408950133], \qquad J_{\mathrm{sq}}(3/4) \in [2.143651662,\, 2.143715091], \label{eq:Jsq-mid-val}\\
+J_{\mathrm{sq}}(1) &= 4 I_W - 3 \in [3.06554423660,\, 3.06554423661], \label{eq:Jsq-1-val}\\
+W_3(0) &\in [0.465731536,\, 0.468991537], \qquad W_3(1/2) \in [0.753857519,\, 0.754460345], \label{eq:W3-0-val}\\
+W_3(3/4) &\in [0.883893431,\, 0.884024120], \qquad I_{\sin} \in [1.179837674,\, 1.207622426], \label{eq:Isin-val}\\
+W_3(1) &= \frac{2I_W - 1}{3} \in [0.67759070610,\, 0.67759070611]. \label{eq:W3-1-val}
+\end{align}
+Notice that $I_3 \approx 0.68$ matches the numerical constant cited in~\cite{koma2022}, and $2 I_{\sin} \le 2.41525 < \sqrt{6} \approx 2.44949$.
+
+\subsection{Theorem 1: Zero-hopping Penson-Kolb-Hubbard model (\texorpdfstring{$t = 0$}{t = 0})}\label{subsec:thm1}
+
+For $r \in [0, 1]$, let $H_2(r) := -r\ln r - (1-r)\ln(1-r)$ (with $0\ln 0 := 0$) denote the binary entropy. For any inverse temperature $\beta_0 = 1/T_0 > 0$ and rational staggered trial field $h \ge 0$, define the four-state dimer trial free energy per site (with $g = J > 0$):
+\begin{equation}\label{eq:F-dimer-def}
+F_{\mathrm{dimer}}(\beta_0, h) := -g\,\frac{\beta_0 g e_{\max} + \ln Z_4(\beta_0, h)}{2\beta_0 g} + g h m_1(\beta_0, h) - \frac{5}{4}g\,m_1(\beta_0, h)^2,
+\end{equation}
+where $s := \sqrt{\frac{1}{4} + 4h^2}$, $e_{\max} := \frac{1}{2} + s$, and
+\begin{equation}\label{eq:Z4-m1-def}
+Z_4(\beta_0, h) := 1 + e^{-\beta_0 g e_{\max}} + e^{-2\beta_0 g s} + e^{-\beta_0 g(e_{\max} + 1)}, \qquad m_1(\beta_0, h) := \frac{2h}{s}\,\frac{1 - e^{-2\beta_0 g s}}{Z_4(\beta_0, h)}.
+\end{equation}
+
+\begin{theorem}[Positive-temperature pair ODLRO at $t = 0$ on the full Fock space]\label{thm:t0}
+Consider the three-dimensional Penson-Kolb-Hubbard Hamiltonian $H_{\mathrm{FM}}^{(\Lambda)}(J, U, 0)$ of~\eqref{eq:H-FM} (or $H^{(\Lambda)}(g, U, 0)$ of~\eqref{eq:H-AF} with $g = J > 0$) on the full $4^{|\Lambda|}$-dimensional fermion Fock space $\calF(\Lambda)$. For any $U/J \in \bbR$ and $T_0 > 0$ ($\beta_0 = 1/T_0$), set
+\begin{equation}\label{eq:rmax-def}
+r_{\max}(T_0, U) := \begin{cases} \dfrac{1}{1 + e^{U/(2T_0)}}, & U \ge 0,\\[1ex] 1, & U < 0. \end{cases}
+\end{equation}
+For any rational trial field $h \ge 0$, any $\alpha \in \{0, 1/2, 3/4, 1\}$, and any $r \in [0, r_{\max}(T_0, U)]$, define
+\begin{equation}\label{eq:E1-bounds-t0}
+\calE_1^{\mathrm{lo}}(r; T_0, U) := \max\!\left(0,\; \frac{-F_{\mathrm{dimer}}(\beta_0, h) - T_0(\ln 2 + H_2(r)) + \frac{U}{2}r}{3J}\right), \qquad \calE_1^{\mathrm{hi}}(r) := \frac{1 - r}{\sqrt{3}}.
+\end{equation}
+Every vacancy density $r \in [0, r_{\max}(T_0, U)]$ satisfying $\calE_1^{\mathrm{lo}}(r; T_0, U) > \calE_1^{\mathrm{hi}}(r)$ is thermodynamically impossible at all $\beta \ge \beta_0$. On the admissible set $\mathcal{R}_{\mathrm{adm}}(T_0, U) := \{r \in [0, r_{\max}(T_0, U)] : \calE_1^{\mathrm{lo}}(r; T_0, U) \le \calE_1^{\mathrm{hi}}(r)\}$, let $c_0(T_0) := \frac{I_W T_0^2}{9J^2}$, so that $E_\alpha^* := \frac{1}{4}J_{\mathrm{sq}}(\alpha) - c_0(T_0)$ is the unique global minimizer of $E \mapsto E - \sqrt{J_{\mathrm{sq}}(\alpha)(E + c_0(T_0))}$ on $[-c_0(T_0), \infty)$, and define
+\begin{equation}\label{eq:mfloor-t0}
+m_{\mathrm{floor}}^2(T_0, U) := \inf_{r \in \mathcal{R}_{\mathrm{adm}}(T_0, U)} \;\min_{E \in [\calE_1^{\mathrm{lo}}(r; T_0, U),\, \calE_1^{\mathrm{hi}}(r)]} \frac{\alpha(1 - r) + E - \sqrt{J_{\mathrm{sq}}(\alpha)\bigl(E + c_0(T_0)\bigr)}}{1 + \alpha}.
+\end{equation}
+If $m_{\mathrm{floor}}^2(T_0, U) > 0$, then every thermodynamic pair-condensate limit point satisfies $m_0^2(T) \ge m_{\mathrm{floor}}^2(T_0, U) > 0$ for \emph{all} $0 < k_B T \le T_0$.
+
+In particular, 50-digit outward-rounded interval evaluation of~\eqref{eq:mfloor-t0} across an 800-bin partition of $[0, r_{\max}(T_0, U)]$ (with strict directed rounding down of the resulting condensate floor) certifies positive pair ODLRO for all $0 < k_B T \le T_0$ at each parameter row in Table~\ref{tab:t0-floors}.
+\end{theorem}
+
+\begin{table}[ht]
+\centering
+\caption{Interval-certified temperature ceilings $T_0/J$ and uniform pair-condensate floors $\inf_{0 < T \le T_0} m_0^2(T)$ for the 3D $t=0$ Penson-Kolb-Hubbard model on the full Fock space (Theorem~\ref{thm:t0}). Every floor is rounded strictly downward from 50-digit interval arithmetic over 800 bins in $r \in [0, r_{\max}(T_0, U)]$.}\label{tab:t0-floors}
+\begin{tabular}{@{}c l c c c@{}}
+\toprule
+$U/J$ & Regime & Certified $T_0/J$ & Certified $\inf_{0 < T \le T_0} m_0^2(T)$ & Weight $\alpha$ \\
+\midrule
+$-0.5$ & Weak on-site repulsion & $0.155$ & $\ge 1.7286 \times 10^{-3}$ & $1/2$ \\
+$0.0$  & Pure Penson-Kolb ($U=0$) & $0.205$ & $\ge 1.6906 \times 10^{-3}$ & $1/2$ \\
+$1.0$  & Moderate on-site attraction & $0.435$ & $\ge 2.2130 \times 10^{-3}$ & $3/4$ \\
+$4.0$  & Intermediate attraction & $0.900$ & $\ge 2.4383 \times 10^{-3}$ & $3/4$ \\
+$10.0$ & Strong attraction & $1.140$ & $\ge 1.1750 \times 10^{-3}$ & $1$ \\
+$100.0$ & Deep attraction ($U \gg J$) & $1.170$ & $\ge 1.4858 \times 10^{-3}$ & $1$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}[Deep-attraction $U \to \infty$ limit]\label{rem:xy-limit}
+As $U/J \to +\infty$, $r_{\max}(T_0, U) = (1 + e^{U/(2T_0)})^{-1} \to 0$, suppressing singly occupied sites exponentially and reducing~\eqref{eq:mfloor-t0} to the pure $r=0$ spin-$1/2$ XY sum rule. At $r = 0$ and $\alpha = 1$, the unconstrained KLS minimum at $E_1^* = \frac{1}{4}J_{\mathrm{sq}}(1) - c_0(T_0)$ equals $\frac{1}{2}(1 - \frac{1}{4}J_{\mathrm{sq}}(1) - c_0(T_0)) = \frac{1}{2}(\frac{7}{4} - I_W - \frac{I_W T_0^2}{9J^2})$, which remains strictly positive up to $T_0/J = 3\sqrt{(7/4 - I_W)/I_W} \approx 1.1775$; the certified row $U/J = 100.0$ reaches $T_0/J = 1.170$.
+\end{remark}
+
+\subsection{Theorem 2: \texorpdfstring{$\pi$}{pi}-flux Penson-Kolb-Hubbard model with \texorpdfstring{$\kappa \ne 0$}{kappa != 0}}\label{subsec:thm2}
+
+\begin{theorem}[Positive-temperature pair ODLRO with $\pi$-flux hopping $\kappa \ne 0$]\label{thm:piflux}
+Consider the three-dimensional $\pi$-flux Penson-Kolb-Hubbard Hamiltonian $H^{(\Lambda)}(g, U, \kappa)$ of~\eqref{eq:H-AF} (or $H_{\mathrm{FM}}^{(\Lambda)}(g, U, \kappa)$ of~\eqref{eq:H-FM} with $J = g > 0$) on the full $4^{|\Lambda|}$-dimensional fermion Fock space $\calF(\Lambda)$ with $g > 0$, $U \ge 0$, and single-electron hopping amplitude $\kappa \ne 0$. For any $r \in [0, 1]$, define the hopping-energy enclosure
+\begin{equation}\label{eq:ehop-up}
+e_{\mathrm{hop}}^{\mathrm{up}}(r; \kappa) := \min\!\Big(2 I_{\sin}|\kappa|,\; 2\sqrt{6}\,|\kappa|\sqrt{r}\Big),
+\end{equation}
+and for any $T_0 > 0$ ($\beta_0 = 1/T_0$), any rational trial field $h \ge 0$, and any $\alpha \in \{0, 1/2, 3/4, 1\}$, define
+\begin{equation}\label{eq:E1-bounds-kap}
+\begin{aligned}
+\calE_1^{\mathrm{lo}}(r; T_0, U, \kappa) &:= \max\!\left(0,\; \frac{-F_{\mathrm{dimer}}(\beta_0, h) - T_0(\ln 2 + H_2(r)) + \frac{U}{2}r - e_{\mathrm{hop}}^{\mathrm{up}}(r; \kappa)}{3g}\right), \\
+\calE_1^{\mathrm{hi}}(r) &:= \frac{1 - r}{\sqrt{3}}.
+\end{aligned}
+\end{equation}
+Every $r \in [0, 1]$ with $\calE_1^{\mathrm{lo}}(r; T_0, U, \kappa) > \calE_1^{\mathrm{hi}}(r)$ is thermodynamically impossible at all $\beta \ge \beta_0$. On the admissible set $\mathcal{R}_{\mathrm{adm}}(T_0, U, \kappa) := \{r \in [0, 1] : \calE_1^{\mathrm{lo}}(r; T_0, U, \kappa) \le \calE_1^{\mathrm{hi}}(r)\}$, let $c(r; T_0, \kappa) := \frac{e_{\mathrm{hop}}^{\mathrm{up}}(r; \kappa)}{6g} + \frac{I_W T_0^2}{9g^2}$, let $E_\alpha^*(r) := \frac{1}{4}J_{\mathrm{sq}}(\alpha) - c(r; T_0, \kappa)$, and define
+\begin{equation}\label{eq:mfloor-kap}
+m_{\mathrm{floor}}^2(T_0, U, \kappa) := \inf_{r \in \mathcal{R}_{\mathrm{adm}}(T_0, U, \kappa)} \;\min_{E \in [\calE_1^{\mathrm{lo}},\, \calE_1^{\mathrm{hi}}]} \frac{\alpha(1 - r) + E - \sqrt{J_{\mathrm{sq}}(\alpha)\bigl(E + c(r; T_0, \kappa)\bigr)}}{1 + \alpha},
+\end{equation}
+where $\calE_1^{\mathrm{lo}} = \calE_1^{\mathrm{lo}}(r; T_0, U, \kappa)$ and $\calE_1^{\mathrm{hi}} = \calE_1^{\mathrm{hi}}(r)$.
+If $m_{\mathrm{floor}}^2(T_0, U, \kappa) > 0$, then every thermodynamic pair-condensate limit point satisfies $m_0^2(T) \ge m_{\mathrm{floor}}^2(T_0, U, \kappa) > 0$ for \emph{all} $0 < k_B T \le T_0$.
+
+In particular, 50-digit outward-rounded interval evaluation of~\eqref{eq:mfloor-kap} across an 800-bin partition of $[0, 1]$ certifies positive pair ODLRO for all $0 < k_B T \le T_0$ at each parameter row in Table~\ref{tab:piflux-floors}.
+\end{theorem}
+
+\begin{table}[ht]
+\centering
+\caption{Interval-certified temperature ceilings $T_0/g$ and uniform pair-condensate floors $\inf_{0 < T \le T_0} m_0^2(T)$ for the 3D $\pi$-flux Penson-Kolb-Hubbard model with nonzero single-electron hopping $\kappa \ne 0$ on the full Fock space (Theorem~\ref{thm:piflux}). Every floor is rounded strictly downward from 50-digit interval arithmetic over 800 bins in $r \in [0, 1]$.}\label{tab:piflux-floors}
+\begin{tabular}{@{}c c c c c@{}}
+\toprule
+$U/g$ & $|\kappa|/g$ & Certified $T_0/g$ & Certified $\inf_{0 < T \le T_0} m_0^2(T)$ & Weight $\alpha$ \\
+\midrule
+$0.0$  & $0.02$ & $0.160$ & $\ge 7.8445 \times 10^{-4}$ & $1/2$ \\
+$0.0$  & $0.05$ & $0.085$ & $\ge 5.8069 \times 10^{-4}$ & $1/2$ \\
+$4.0$  & $0.05$ & $0.400$ & $\ge 1.1635 \times 10^{-3}$ & $1/2$ \\
+$4.0$  & $0.10$ & $0.290$ & $\ge 7.5765 \times 10^{-4}$ & $1/2$ \\
+$4.0$  & $0.20$ & $0.045$ & $\ge 7.8083 \times 10^{-4}$ & $1/2$ \\
+$10.0$ & $0.10$ & $0.590$ & $\ge 7.9024 \times 10^{-4}$ & $1/2$ \\
+$10.0$ & $0.20$ & $0.410$ & $\ge 1.5236 \times 10^{-4}$ & $1/2$ \\
+$10.0$ & $0.35$ & $0.080$ & $\ge 6.5047 \times 10^{-6}$ & $1/2$ \\
+$20.0$ & $0.50$ & $0.210$ & $\ge 4.0079 \times 10^{-4}$ & $1/2$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}[Scope of $U$ in Theorems~\ref{thm:t0} and~\ref{thm:piflux}]\label{rem:u-scope}
+Gaussian domination (Theorem~\ref{thm:rp-gd}) and the KLS-weighted infrared sum rule (Proposition~\ref{prop:kls}) hold for every $U \in \bbR$ and every $\kappa \in \bbR$. At $\kappa = 0$, the site-conditioning bound $r(\beta) \le (1 + e^{\beta U/2})^{-1}$ holds for all $U \in \bbR$, which allows negative (repulsive) $U/J = -0.5$ to be certified with $r_{\max} = 1$. At $\kappa \ne 0$, $H_{\mathrm{hop}}^{(\Lambda)}(\kappa)$ does not commute with $P_{\calV_x}$ and Lemma~\ref{lem:vacancy} does not apply, so $r(\beta)$ is constrained only by $\calE_1^{\mathrm{lo}}(r) \le \calE_1^{\mathrm{hi}}(r)$ on $[0, 1]$; Theorem~\ref{thm:piflux} is stated for $U \ge 0$ (where the $+\frac{U}{2}r$ term aids exclusion of large $r$), though the underlying inequality~\eqref{eq:mfloor-kap} remains valid whenever $m_{\mathrm{floor}}^2 > 0$.
+\end{remark}
+
+\section{Reflection positivity, Gaussian domination, and Koma's factor of two}\label{sec:gd}
+
+\subsection{Majorana representation and reflection positivity with on-site Hubbard coupling}\label{subsec:rp}
+
+Introduce the Majorana fermion operators on $\calF(\Lambda)$:
+\begin{equation}\label{eq:majorana-def}
+\xi_{x,\sigma} := a_{x,\sigma} + a_{x,\sigma}^\dagger, \qquad \eta_{x,\sigma} := i(a_{x,\sigma}^\dagger - a_{x,\sigma}),
+\end{equation}
+which obey $\{\xi_{x,\sigma}, \xi_{y,\sigma'}\} = \{\eta_{x,\sigma}, \eta_{y,\sigma'}\} = 2\delta_{x,y}\delta_{\sigma,\sigma'}$ and $\{\xi_{x,\sigma}, \eta_{y,\sigma'}\} = 0$. In Majorana variables, the pair operators~\eqref{eq:gamma-def} take the quadratic form
+\begin{equation}\label{eq:gamma-majorana}
+\Gamma_x^{(1)} = \frac{i}{2}\left(\xi_{x,\uparrow}\eta_{x,\downarrow} + \eta_{x,\uparrow}\xi_{x,\downarrow}\right), \quad
+\Gamma_x^{(2)} = \frac{i}{2}\left(\xi_{x,\uparrow}\xi_{x,\downarrow} - \eta_{x,\uparrow}\eta_{x,\downarrow}\right), \quad
+\Gamma_x^{(3)} = -\frac{i}{2}\left(\xi_{x,\uparrow}\eta_{x,\uparrow} + \xi_{x,\downarrow}\eta_{x,\downarrow}\right).
+\end{equation}
+
+Split the torus $\Lambda = \Lambda_- \cup \Lambda_+$ across the reflection hyperplane $x^{(1)} = 1/2$ (together with $x^{(1)} = -L + 1/2$), with spatial reflection $\vartheta(x^{(1)}, x^{(2)}, x^{(3)}) := (1 - x^{(1)}, x^{(2)}, x^{(3)})$ modulo $2L$. Following Jaffe and Pedrocchi~\cite{jaffe2015a} (Section~III) and Koma~\cite{koma2022} (Section~5.1, Eq.~(5.16)), let $U_{\mathrm{odd}}^{(\Lambda)}$ be the bipartite particle-hole unitary $a_{x,\sigma} \leftrightarrow a_{x,\sigma}^\dagger$ ($\xi_{x,\sigma} \mapsto \xi_{x,\sigma}$, $\eta_{x,\sigma} \mapsto -\eta_{x,\sigma}$) on $x \in \Lambda_{\mathrm{odd}}$, and let $U_1^{(\Lambda)}$ be Koma's local gauge transformation (Proposition~5.1 of~\cite{koma2022}) aligning the signs of all hopping bonds crossing the reflection cut $x^{(1)} \in \{0, -L\}$. Under the composite unitary $\tilde{U}_1^{(\Lambda)} := U_1^{(\Lambda)} U_{\mathrm{odd}}^{(\Lambda)}$:
+\begin{equation}\label{eq:u1tilde-action}
+(\tilde{U}_1^{(\Lambda)})^\dagger \Gamma_x^{(1)} \tilde{U}_1^{(\Lambda)} = (-1)^x \Gamma_x^{(1)}, \qquad (\tilde{U}_1^{(\Lambda)})^\dagger \Gamma_x^{(2)} \tilde{U}_1^{(\Lambda)} = \Gamma_x^{(2)}, \qquad (\tilde{U}_1^{(\Lambda)})^\dagger [\Gamma_x^{(1)}]^2 \tilde{U}_1^{(\Lambda)} = [\Gamma_x^{(1)}]^2,
+\end{equation}
+and the anti-linear Majorana reflection $\vartheta$ defined by $\vartheta(\xi_{x,\sigma}) = \xi_{\vartheta(x),\sigma}$ and $\vartheta(\eta_{x,\sigma}) = -\eta_{\vartheta(x),\sigma}$ satisfies $\vartheta(\Gamma_x^{(1)}) = \Gamma_{\vartheta(x)}^{(1)}$ and $\vartheta(\Gamma_x^{(2)}) = -\Gamma_{\vartheta(x)}^{(2)}$.
+
+For real bond fields $h = \{h_m(x)\}_{x \in \Lambda, m \in \{1,2,3\}}$, define the deformed AF-gauge Hamiltonian (matching Eq.~(3.5) of~\cite{koma2022} plus the on-site Hubbard term $H_U^{(\Lambda)}$):
+\begin{multline}\label{eq:H-deformed}
+H^{(\Lambda)}(h) := \frac{g}{4} \sum_{x \in \Lambda} \sum_{m=1}^3 \left[\Gamma_x^{(1)} + \Gamma_{x+e_m}^{(1)} + h_m(x)\right]^2 - \frac{g}{4} \sum_{x \in \Lambda} \sum_{m=1}^3 \left[\Gamma_x^{(2)} - \Gamma_{x+e_m}^{(2)}\right]^2 \\
++ \frac{U}{2} \sum_{x \in \Lambda} \left(1 - [\Gamma_x^{(1)}]^2\right) + H_{\mathrm{hop}}^{(\Lambda)}(\kappa).
+\end{multline}
+At $h = 0$, expanding the two squares and invoking $[\Gamma_x^{(1)}]^2 = [\Gamma_x^{(2)}]^2$ from Lemma~\ref{lem:pair-algebra} Eq.~\eqref{eq:proj-id} cancels all on-site quadratic terms identically:
+\begin{equation}\label{eq:sq-complete}
+\frac{g}{4}\left([\Gamma_x^{(1)} + \Gamma_{x+e_m}^{(1)}]^2 - [\Gamma_x^{(2)} - \Gamma_{x+e_m}^{(2)}]^2\right) = \frac{g}{2}\left(\Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} + \Gamma_x^{(2)}\Gamma_{x+e_m}^{(2)}\right),
+\end{equation}
+so $H^{(\Lambda)}(0) = H^{(\Lambda)}(g, U, \kappa)$ is identical to~\eqref{eq:H-AF}.
+
+\begin{theorem}[Reflection positivity and corrected Gaussian domination]\label{thm:rp-gd}
+For every $g > 0$, every $U \in \bbR$, every $\kappa \in \bbR$, and every inverse temperature $\beta > 0$:
+\begin{enumerate}[label=\arabic*.,leftmargin=2em]
+\item The partition function $Z_\beta^{(\Lambda)}(h) := \Tr_{\calF(\Lambda)}\!\left(e^{-\beta H^{(\Lambda)}(h)}\right)$ satisfies the Gaussian domination inequality
+\begin{equation}\label{eq:gd-Z}
+Z_\beta^{(\Lambda)}(h) \le Z_\beta^{(\Lambda)}(0) \qquad \forall\, h = \{h_m(x)\} \subset \bbR^{3|\Lambda|}.
+\end{equation}
+\item Define the Duhamel two-point function
+\begin{equation}\label{eq:bp-def}
+\mathfrak{b}_p := (\hat{\Gamma}_p^{(1)}, \hat{\Gamma}_{-p}^{(1)})_\beta^{(\Lambda)} := \frac{1}{Z_\beta^{(\Lambda)}(0)} \int_0^1 ds\, \Tr_{\calF(\Lambda)}\!\left(e^{-(1-s)\beta H^{(\Lambda)}(0)} \hat{\Gamma}_p^{(1)} e^{-s\beta H^{(\Lambda)}(0)} \hat{\Gamma}_{-p}^{(1)}\right).
+\end{equation}
+Then for every $p \in \Lambda^*$ with $p \ne Q = (\pi, \pi, \pi)$ (or $p \ne (0,0,0)$ in the FM gauge~\eqref{eq:H-FM}), $\mathfrak{b}_p$ obeys the infrared bound
+\begin{equation}\label{eq:gd-bp}
+\mathfrak{b}_p \le \frac{1}{\beta g E_{p+Q}}, \qquad E_k := \sum_{m=1}^3 \left(1 - \cos k^{(m)}\right).
+\end{equation}
+\item Moreover, reflection positivity in the $\Gamma^{(1)}$ channel yields $\langle \Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} \rangle_\beta^{(\Lambda)} \le 0$ in the AF gauge (or $\ge 0$ in the FM gauge) for every bond $(x, x+e_m)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Under $\tilde{U}_1^{(\Lambda)} = U_1^{(\Lambda)} U_{\mathrm{odd}}^{(\Lambda)}$, $\Gamma_x^{(1)} + \Gamma_{x+e_m}^{(1)}$ maps to $(-1)^x(\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)})$, so with $\tilde{h}_m(x) := (-1)^x h_m(x)$ we obtain
+\begin{multline}\label{eq:H-deformed-tilde}
+(\tilde{U}_1^{(\Lambda)})^\dagger H^{(\Lambda)}(h) \tilde{U}_1^{(\Lambda)} = \frac{g}{4} \sum_{x,m} \left[\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)} + \tilde{h}_m(x)\right]^2 - \frac{g}{4} \sum_{x,m} \left[\Gamma_x^{(2)} - \Gamma_{x+e_m}^{(2)}\right]^2 \\
++ \frac{U}{2} \sum_x \left(1 - [\Gamma_x^{(1)}]^2\right) + \tilde{H}_{\mathrm{hop}}^{(\Lambda)}(\kappa).
+\end{multline}
+The on-site Hubbard term $\frac{U}{2}\sum_x (1 - [\Gamma_x^{(1)}]^2) = H_{U,-} + H_{U,+}$ is a sum of strictly local operators in $\Lambda_-$ and $\Lambda_+$ satisfying $\vartheta(H_{U,-}) = H_{U,+}$ for every $U \in \bbR$ (using $\vartheta(\Gamma_x^{(1)}) = \Gamma_{\vartheta(x)}^{(1)}$). It enters $\tilde{H}_\pm(\tilde{h})$ inside the Lie-Trotter-Duhamel expansion of~\cite{koma2022} (Section~5.2, Eqs.~(5.61)--(5.99)) without creating any bond across the reflection plane $x^{(1)} \in \{0, -L\}$. Hence Theorem~5.3 of~\cite{koma2022} extends verbatim to every $U \in \bbR$, establishing~\eqref{eq:gd-Z} and likewise part~3 (Eq.~(5.101) of~\cite{koma2022}).
+
+To prove~\eqref{eq:gd-bp}, expand $[\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)} + \tilde{h}_m(x)]^2$ in~\eqref{eq:H-deformed-tilde}:
+\begin{equation}\label{eq:H-expand}
+(\tilde{U}_1^{(\Lambda)})^\dagger H^{(\Lambda)}(h) \tilde{U}_1^{(\Lambda)} = (\tilde{U}_1^{(\Lambda)})^\dagger H^{(\Lambda)}(0) \tilde{U}_1^{(\Lambda)} + \frac{g}{2} \sum_{x,m} (\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)})\tilde{h}_m(x) + \frac{g}{4} \sum_{x,m} \tilde{h}_m(x)^2.
+\end{equation}
+Replacing $\tilde{h}_m(x)$ by $\varepsilon \tilde{h}_m(x)$ for $\varepsilon \in \bbR$, Gaussian domination $Z_\beta^{(\Lambda)}(\varepsilon h) \le Z_\beta^{(\Lambda)}(0)$ implies that $\ln Z_\beta^{(\Lambda)}(\varepsilon h)$ has nonpositive second derivative at $\varepsilon = 0$. Differentiating $\ln Z_\beta^{(\Lambda)}(\varepsilon h)$ twice via Duhamel's identity together with the quadratic counterterm $-\beta\frac{g}{4}\varepsilon^2 \sum_{x,m}\tilde{h}_m(x)^2$ gives
+\begin{equation}\label{eq:duhamel-2nd}
+\begin{split}
+0 &\ge \frac{d^2}{d\varepsilon^2}\ln Z_\beta^{(\Lambda)}(\varepsilon h)\Big|_{\varepsilon=0} \\
+&= \beta^2 \left(\frac{g}{2}\right)^2 \left(\sum_{x,m}(\Gamma_x^{(1)}-\Gamma_{x+e_m}^{(1)})\tilde{h}_m(x),\; \sum_{y,n}(\Gamma_y^{(1)}-\Gamma_{y+e_n}^{(1)})\tilde{h}_n(y)\right)_\beta - \frac{\beta g}{2} \sum_{x,m} \tilde{h}_m(x)^2.
+\end{split}
+\end{equation}
+Dividing both sides by $\beta^2 (g/2)^2 = \beta^2 g^2 / 4$ yields
+\begin{equation}\label{eq:real-source-bound}
+\left(\sum_{x,m}(\Gamma_x^{(1)}-\Gamma_{x+e_m}^{(1)})\tilde{h}_m(x),\; \sum_{y,n}(\Gamma_y^{(1)}-\Gamma_{y+e_n}^{(1)})\tilde{h}_n(y)\right)_\beta \le \frac{2\beta(g/4)}{\beta^2(g^2/4)} \sum_{x,m} \tilde{h}_m(x)^2 = \frac{2}{\beta g} \sum_{x,m} \tilde{h}_m(x)^2.
+\end{equation}
+By sesquilinearity of the Duhamel inner product, \eqref{eq:real-source-bound} extends to complex bond fields $\tilde{h}_m(x) \in \bbC$ with $\tilde{h}_m(x)^2$ replaced by $|\tilde{h}_m(x)|^2$. Choosing the plane wave $\tilde{h}_m(x) = |\Lambda|^{-1/2} (1 - e^{-i k^{(m)}}) e^{ik\cdot x}$ with $k = p + Q$ (so $(-1)^x e^{ik\cdot x} = e^{ip\cdot x}$) gives
+\begin{equation*}
+\sum_{x,m} (\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)}) \tilde{h}_m(x) = \sum_{m=1}^3 |1 - e^{-ik^{(m)}}|^2 \hat{\Gamma}_p^{(1)} = 2 E_{p+Q} \hat{\Gamma}_p^{(1)}, \qquad \sum_{x,m} |\tilde{h}_m(x)|^2 = 2 E_{p+Q}.
+\end{equation*}
+Substituting both expressions into~\eqref{eq:real-source-bound} gives $(2 E_{p+Q})^2 \mathfrak{b}_p \le \frac{2}{\beta g}(2 E_{p+Q})$, and dividing by $4 E_{p+Q}^2 > 0$ (for $p \ne Q$) proves~\eqref{eq:gd-bp}.
+\end{proof}
+
+\subsection{The factor-of-two slip in Koma (2022) and exact-diagonalization counterexample}\label{subsec:factor2}
+
+In Eq.~(6.4) of~\cite{koma2022}, the factor of $2$ arising from $\frac{d^2}{d\varepsilon^2}(\varepsilon^2) = 2$ in~\eqref{eq:duhamel-2nd} was dropped, resulting in $\frac{1}{\beta g}\sum_{x,m}|\tilde{h}_m(x)|^2$ on the right-hand side of~\eqref{eq:real-source-bound} instead of $\frac{2}{\beta g}\sum_{x,m}|\tilde{h}_m(x)|^2$. Propagating through the Fourier transform to Eqs.~(6.9) and~(6.11) of~\cite{koma2022} produced the printed bound $\mathfrak{b}_p \le (2\beta g E_{p+Q})^{-1}$ instead of $(\beta g E_{p+Q})^{-1}$. As noted in~\cite{rens2026eta}, a direct evaluation of the second derivative already yields the larger constant $(\beta g E_{p+Q})^{-1}$.
+
+To confirm unambiguously that Koma's printed bound $(2\beta g E_{p+Q})^{-1}$ is violated under Koma's exact stated normalization (and is not a convention difference), Section~4 of \texttt{replay.py} performs full-Fock-space exact diagonalization on a four-site periodic ring ($\dim \calF = 4^4 = 256$) with $g = 1$ for both Koma's literal $U = 0$ AF Hamiltonian ($\kappa = 0.0$ and $\kappa = 0.1$) and the $U = 1$ FM Hamiltonian ($\kappa = 0.1$). On a one-dimensional 4-site periodic ring, $E_{p+Q} = 1 - \cos(p + \pi)$ for $p \in \{0, \pm \pi/2, \pi\}$. Table~\ref{tab:koma-counter} records the resulting maximum ratios across $p \ne Q$: Koma's printed bound $(2\beta g E_{p+Q})^{-1}$ is violated with ratio $1.329280 > 1$ at $U=0, \kappa=0, \beta=2.0$ (and $> 1$ across multiple temperatures and couplings), whereas our corrected bound~\eqref{eq:gd-bp} holds in every case with ratio $\le 0.664640 < 1$.
+
+\begin{table}[ht]
+\centering
+\caption{Full-Fock-space exact diagonalization ($N=4$ periodic ring, $\dim \calF = 256$, $g = 1$) comparing the Duhamel two-point function $\mathfrak{b}_p$ against the corrected bound $(\beta g E_{p+Q})^{-1}$ of Theorem~\ref{thm:rp-gd} and Koma's printed bound $(2\beta g E_{p+Q})^{-1}$ (Eq.~(6.11) of~\cite{koma2022}).}\label{tab:koma-counter}
+\begin{tabular}{@{}l c c c@{}}
+\toprule
+Model ($N=4$ ring, $g=1$) & $\beta$ & $\max_{p\ne Q} \mathfrak{b}_p / (\beta g E_{p+Q})^{-1}$ & $\max_{p\ne Q} \mathfrak{b}_p / (2\beta g E_{p+Q})^{-1}$ \\
+\midrule
+Koma $U = 0$ AF ($\kappa = 0.0$) & $1.0$ & $0.614157$ & $1.228313$ \\
+Koma $U = 0$ AF ($\kappa = 0.0$) & $2.0$ & $0.664640$ & $1.329280$ \\
+Koma $U = 0$ AF ($\kappa = 0.0$) & $5.0$ & $0.366145$ & $0.732291$ \\
+Koma $U = 0$ AF ($\kappa = 0.1$) & $1.0$ & $0.611149$ & $1.222298$ \\
+Koma $U = 0$ AF ($\kappa = 0.1$) & $2.0$ & $0.654439$ & $1.308878$ \\
+Koma $U = 0$ AF ($\kappa = 0.1$) & $5.0$ & $0.369795$ & $0.739591$ \\
+FM PKH $U = 1$ ($\kappa = 0.1$)  & $1.0$ & $0.654256$ & $1.308512$ \\
+FM PKH $U = 1$ ($\kappa = 0.1$)  & $2.0$ & $0.512978$ & $1.025956$ \\
+FM PKH $U = 1$ ($\kappa = 0.1$)  & $5.0$ & $0.358463$ & $0.716926$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Double commutator, hopping control, and KLS sum rule}\label{sec:sumrule}
+
+Define the intensive thermal expectation values in the AF gauge:
+\begin{align}
+\calE_1(\beta) &:= -\frac{1}{3|\Lambda|} \sum_{x \in \Lambda} \sum_{m=1}^3 \langle \Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} \rangle_\beta^{(\Lambda)} = -\frac{1}{6|\Lambda|} \sum_{x \in \Lambda} \sum_{m=1}^3 \langle \Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} + \Gamma_x^{(2)}\Gamma_{x+e_m}^{(2)} \rangle_\beta^{(\Lambda)}, \label{eq:E1-def}\\
+\calE_3(\beta) &:= \frac{1}{3|\Lambda|} \sum_{x \in \Lambda} \sum_{m=1}^3 \langle \Gamma_x^{(3)}\Gamma_{x+e_m}^{(3)} \rangle_\beta^{(\Lambda)}, \qquad
+e_{\mathrm{hop}}(\beta) := \frac{1}{|\Lambda|} \langle H_{\mathrm{hop}}^{(\Lambda)}(\kappa) \rangle_\beta^{(\Lambda)}, \qquad
+r(\beta) := \frac{1}{|\Lambda|} \sum_{x \in \Lambda} \langle P_{\calV_x} \rangle_\beta^{(\Lambda)}, \label{eq:thermo-defs}
+\end{align}
+where the second equality in~\eqref{eq:E1-def} uses the $U(1)$ pair-phase symmetry $\Gamma_x^{(1)} \mapsto \Gamma_x^{(2)}$, $\Gamma_x^{(2)} \mapsto -\Gamma_x^{(1)}$ of $H^{(\Lambda)}(g, U, \kappa)$. By part~3 of Theorem~\ref{thm:rp-gd}, $\calE_1(\beta) \ge 0$ for all $g > 0$, $U \in \bbR$, $\kappa \in \bbR$, and $\beta > 0$.
+
+\subsection{Exact momentum-averaged double commutator}\label{subsec:double-comm}
+
+\begin{lemma}[Double commutator and $p$-averaged sum rule]\label{lem:double-comm}
+For $H^{(\Lambda)}(0) = H_{\mathrm{pair}}^{(\Lambda)} + H_U^{(\Lambda)} + H_{\mathrm{hop}}^{(\Lambda)}(\kappa)$ of~\eqref{eq:H-AF}, the thermal double commutator $\mathfrak{c}_p := \langle [\hat{\Gamma}_{-p}^{(1)}, [H^{(\Lambda)}(0), \hat{\Gamma}_p^{(1)}]] \rangle_\beta^{(\Lambda)}$ satisfies $\mathfrak{c}_p \ge 0$ for every $p \in \Lambda^*$, and decomposes as $\mathfrak{c}_p = \mathfrak{c}_p^{\mathrm{pair}} + \mathfrak{c}_p^U + \mathfrak{c}_p^{\mathrm{hop}}$, where:
+\begin{equation}\label{eq:cp-U-pair}
+\mathfrak{c}_p^U = 0 \quad \forall\, p \in \Lambda^*,\;\forall\, U \in \bbR, \qquad \mathfrak{c}_p^{\mathrm{pair}} = 12 g\,\calE_1(\beta) + 12 g\,\calE_3(\beta)\,u_p, \qquad u_p := \frac{1}{3}\sum_{m=1}^3 \cos p^{(m)}.
+\end{equation}
+For each single-electron hopping bond term $\calK_{x,y}$ in $H_{\mathrm{hop}}^{(\Lambda)}(\kappa) = \sum_{x \in \Lambda}\sum_{m=1}^3 \calK_{x,x+e_m}$, the on-site double commutator satisfies
+\begin{equation}\label{eq:onsite-hop-dc}
+[\Gamma_x^{(1)}, [\calK_{x,y}, \Gamma_x^{(1)}]] + [\Gamma_y^{(1)}, [\calK_{x,y}, \Gamma_y^{(1)}]] = -2\,\calK_{x,y},
+\end{equation}
+and the cross-site double commutator is
+\begin{multline}\label{eq:cross-hop-dc}
+[\Gamma_x^{(1)}, [\calK_{x,y}, \Gamma_y^{(1)}]] + [\Gamma_y^{(1)}, [\calK_{x,y}, \Gamma_x^{(1)}]] \\
+= 2\left(\Gamma_x^{(1)}\calK_{x,y}\Gamma_y^{(1)} + \Gamma_y^{(1)}\calK_{x,y}\Gamma_x^{(1)} - \Gamma_x^{(1)}\Gamma_y^{(1)}\calK_{x,y} - \calK_{x,y}\Gamma_x^{(1)}\Gamma_y^{(1)}\right).
+\end{multline}
+When averaged over all $p \in \Lambda^*$, every cross-site term in both $\mathfrak{c}_p^{\mathrm{pair}}$ and $\mathfrak{c}_p^{\mathrm{hop}}$ vanishes identically:
+\begin{equation}\label{eq:p-avg-dc}
+\frac{1}{|\Lambda|} \sum_{p \in \Lambda^*} \mathfrak{c}_p = 12 g\,\calE_1(\beta) - 2\,e_{\mathrm{hop}}(\beta) \le 12 g\,\calE_1(\beta) + 2\,|e_{\mathrm{hop}}(\beta)|.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+In an eigenbasis $\{|\alpha\rangle\}$ of $H^{(\Lambda)}(0)$ with eigenvalues $E_\alpha$,
+\begin{equation*}
+\mathfrak{c}_p = \sum_{\alpha,\gamma} \frac{e^{-\beta E_\alpha}}{Z_\beta^{(\Lambda)}(0)} |\langle \alpha|\hat{\Gamma}_p^{(1)}|\gamma\rangle|^2 (E_\gamma - E_\alpha)\bigl(1 - e^{-\beta(E_\gamma - E_\alpha)}\bigr) \ge 0.
+\end{equation*}
+By Lemma~\ref{lem:pair-algebra} Eq.~\eqref{eq:hubbard-comm}, $[H_U^{(\Lambda)}, \hat{\Gamma}_p^{(1)}] = 0$, so $\mathfrak{c}_p^U = 0$ for all $U \in \bbR$.
+
+For each bond $y = x + e_m$ in $H_{\mathrm{pair}}^{(\Lambda)} = \frac{g}{2}\sum_{x,m}(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)})$:
+\begin{itemize}[leftmargin=2em]
+\item For the on-site terms, $[\Gamma_x^{(1)}, [\Gamma_x^{(1)}\Gamma_y^{(1)}, \Gamma_x^{(1)}]] = 0$, while~\eqref{eq:su2-comm} yields
+\begin{equation*}
+[\Gamma_x^{(1)}, [\Gamma_x^{(2)}\Gamma_y^{(2)}, \Gamma_x^{(1)}]] = [\Gamma_x^{(1)}, -2i\Gamma_x^{(3)}\Gamma_y^{(2)}] = -4\Gamma_x^{(2)}\Gamma_y^{(2)},
+\end{equation*}
+with the same result $-4\Gamma_x^{(2)}\Gamma_y^{(2)}$ from site $y$.
+\item For the cross-site terms, $[\Gamma_x^{(1)}, [\Gamma_x^{(1)}\Gamma_y^{(1)}, \Gamma_y^{(1)}]] = 0$, while~\eqref{eq:su2-comm} yields
+\begin{equation*}
+[\Gamma_x^{(1)}, [\Gamma_x^{(2)}\Gamma_y^{(2)}, \Gamma_y^{(1)}]] = [\Gamma_x^{(1)}, -2i\Gamma_x^{(2)}\Gamma_y^{(3)}] = +4\Gamma_x^{(3)}\Gamma_y^{(3)},
+\end{equation*}
+with the same result $+4\Gamma_x^{(3)}\Gamma_y^{(3)}$ under $x \leftrightarrow y$.
+\end{itemize}
+Summing over all bonds with $\hat{\Gamma}_p^{(1)} = |\Lambda|^{-1/2}\sum_z e^{-ip\cdot z}\Gamma_z^{(1)}$ and using $\langle \Gamma_x^{(2)}\Gamma_y^{(2)}\rangle_\beta = \langle \Gamma_x^{(1)}\Gamma_y^{(1)}\rangle_\beta$ gives~\eqref{eq:cp-U-pair} (matching Eq.~(6.28) of~\cite{koma2022}).
+
+For each single-electron hopping bond $\calK_{x,y}$, the operator $\calK_{x,y}$ changes the fermion number at site $x$ by $\pm 1$ and therefore intertwines $\calP_x$ and $\calV_x$:
+\begin{equation}\label{eq:K-parity}
+P_{\calP_x} \calK_{x,y} P_{\calP_x} = P_{\calV_x} \calK_{x,y} P_{\calV_x} = 0 \implies \Gamma_x^{(1)} \calK_{x,y} \Gamma_x^{(1)} = \Gamma_x^{(1)} P_{\calP_x} \calK_{x,y} P_{\calP_x} \Gamma_x^{(1)} = 0.
+\end{equation}
+Since $[\Gamma_x^{(1)}]^2 = P_{\calP_x}$ and $P_{\calP_x} \calK_{x,y} + \calK_{x,y} P_{\calP_x} = P_{\calP_x}\calK_{x,y}P_{\calV_x} + P_{\calV_x}\calK_{x,y}P_{\calP_x} = \calK_{x,y}$, we obtain
+\begin{equation}\label{eq:K-single-dc}
+[\Gamma_x^{(1)}, [\calK_{x,y}, \Gamma_x^{(1)}]] = 2\Gamma_x^{(1)}\calK_{x,y}\Gamma_x^{(1)} - [\Gamma_x^{(1)}]^2 \calK_{x,y} - \calK_{x,y}[\Gamma_x^{(1)}]^2 = -(P_{\calP_x}\calK_{x,y} + \calK_{x,y}P_{\calP_x}) = -\calK_{x,y}.
+\end{equation}
+Adding the symmetric contribution $-\calK_{x,y}$ from site $y$ yields~\eqref{eq:onsite-hop-dc}, while expanding $[\Gamma_x^{(1)}, [\calK_{x,y}, \Gamma_y^{(1)}]]$ directly gives~\eqref{eq:cross-hop-dc}. Finally, averaging $\mathfrak{c}_p = |\Lambda|^{-1}\sum_{z,w \in \Lambda} e^{ip\cdot(z-w)} \langle [\Gamma_z^{(1)}, [H^{(\Lambda)}(0), \Gamma_w^{(1)}]] \rangle_\beta^{(\Lambda)}$ over $p \in \Lambda^*$ via $|\Lambda|^{-1}\sum_{p \in \Lambda^*} e^{ip\cdot(z-w)} = \delta_{z,w}$ retains only the diagonal ($z = w$) on-site terms:
+\begin{equation*}
+\frac{1}{|\Lambda|}\sum_{p \in \Lambda^*} \mathfrak{c}_p = \frac{1}{|\Lambda|} \sum_{z \in \Lambda} \langle [\Gamma_z^{(1)}, [H^{(\Lambda)}(0), \Gamma_z^{(1)}]] \rangle_\beta^{(\Lambda)} = 12 g\,\calE_1(\beta) - 2\,e_{\mathrm{hop}}(\beta),
+\end{equation*}
+proving~\eqref{eq:p-avg-dc}.
+\end{proof}
+
+\subsection{Vacancy-controlled and free-fermion hopping bounds}\label{subsec:hopping}
+
+\begin{lemma}[Vacancy-controlled and free-fermion hopping bounds]\label{lem:hopping}
+In any state $\rho$ on $\calF(\Lambda)$ with vacancy density $r := |\Lambda|^{-1}\sum_{x\in\Lambda} \Tr(\rho P_{\calV_x}) \in [0, 1]$, the hopping energy per site $e_{\mathrm{hop}} := |\Lambda|^{-1}\Tr(\rho H_{\mathrm{hop}}^{(\Lambda)}(\kappa))$ satisfies the finite-volume bound $|e_{\mathrm{hop}}| \le 2\sqrt{6}\,|\kappa|\sqrt{r}$, and in the thermodynamic limit $|\Lambda| \to \infty$ satisfies
+\begin{equation}\label{eq:ehop-bound}
+|e_{\mathrm{hop}}| \le \min\!\Big(2 I_{\sin}|\kappa|,\; 2\sqrt{6}\,|\kappa|\sqrt{r}\Big),
+\end{equation}
+where $I_{\sin}$ is given by~\eqref{eq:Isin-def} and enclosed in~\eqref{eq:Isin-val}.
+\end{lemma}
+
+\begin{proof}
+The global norm bound $|e_{\mathrm{hop}}| \le |\Lambda|^{-1}\|H_{\mathrm{hop}}^{(\Lambda)}(\kappa)\| \xrightarrow{|\Lambda|\to\infty} 2I_{\sin}|\kappa|$ is the exact ground-state energy per site of the $\pi$-flux free-fermion tight-binding Hamiltonian $H_{\mathrm{hop}}^{(\Lambda)}(\kappa)$, whose Bloch dispersion on the reduced Brillouin zone is $\pm 2|\kappa|\sqrt{\sin^2 k^{(1)} + \sin^2 k^{(2)} + \sin^2 k^{(3)}}$ filled by two spin species over the negative-energy band (Eq.~(6.32) and Appendix~B of~\cite{koma2022}); as $|\Lambda|\to\infty$ the finite-torus Riemann sum converges to $2I_{\sin}|\kappa|$.
+
+To prove the vacancy-controlled bound $|e_{\mathrm{hop}}| \le 2\sqrt{6}\,|\kappa|\sqrt{r}$ (valid on every finite torus $\Lambda$ as well as in the limit), define for each site $x \in \Lambda$ and spin $\sigma \in \{\uparrow, \downarrow\}$ the neighbor-hopping field $B_{x,\sigma} := \sum_{y \sim x} t_{x,y} a_{y,\sigma}$ with $t_{x,y} = -t_{y,x}^* = \pm i\kappa$ ($|t_{x,y}| = |\kappa|$), so that $H_{\mathrm{hop}}^{(\Lambda)}(\kappa) = \sum_{x \in \Lambda}\sum_{\sigma \in \{\uparrow,\downarrow\}} a_{x,\sigma}^\dagger B_{x,\sigma}$. Because $a_{x,\sigma}^\dagger$ maps $|0\rangle_x \to |\sigma\rangle_x \in \calV_x$ and $|\bar{\sigma}\rangle_x \to \pm|\uparrow\downarrow\rangle_x \in \calP_x$ while annihilating $|\sigma\rangle_x$ and $|\uparrow\downarrow\rangle_x$, every creation operator satisfies $a_{x,\sigma}^\dagger = P_{\calV_x} a_{x,\sigma}^\dagger + a_{x,\sigma}^\dagger P_{\calV_x}$. Multiplying by $B_{x,\sigma}$ and summing over $(x, \sigma)$ yields
+\begin{equation}\label{eq:T1-T2}
+H_{\mathrm{hop}}^{(\Lambda)}(\kappa) = \sum_{x,\sigma} P_{\calV_x} a_{x,\sigma}^\dagger B_{x,\sigma} + \sum_{x,\sigma} a_{x,\sigma}^\dagger P_{\calV_x} B_{x,\sigma} =: T_1 + T_2.
+\end{equation}
+Taking the adjoint of $T_2$ and using $\{a_{x,\sigma}, B_{x,\sigma}^\dagger\} = 0$ (since $B_{x,\sigma}^\dagger$ acts only on neighbors $y \sim x$ with $y \ne x$) places $P_{\calV_x}$ adjacent to $a_{x,\sigma}$ in both terms:
+\begin{equation}\label{eq:T1-T2dag}
+T_1 = \sum_{x,\sigma} (a_{x,\sigma} P_{\calV_x})^\dagger B_{x,\sigma}, \qquad T_2^\dagger = \sum_{x,\sigma} B_{x,\sigma}^\dagger P_{\calV_x} a_{x,\sigma} = -\sum_{x,\sigma} (P_{\calV_x} a_{x,\sigma}) B_{x,\sigma}^\dagger = -\sum_{x,\sigma} (a_{x,\sigma}^\dagger P_{\calV_x})^\dagger B_{x,\sigma}^\dagger.
+\end{equation}
+Since $|\Tr(\rho H_{\mathrm{hop}}^{(\Lambda)}(\kappa))| \le |\Tr(\rho T_1)| + |\Tr(\rho T_2)| = |\Tr(\rho T_1)| + |\Tr(\rho T_2^\dagger)|$, applying the Cauchy-Schwarz inequality $|\Tr(\rho \sum_\alpha X_\alpha^\dagger Y_\alpha)| \le \sqrt{\sum_\alpha \Tr(\rho X_\alpha^\dagger X_\alpha)\,\sum_\alpha \Tr(\rho Y_\alpha^\dagger Y_\alpha)}$ to~\eqref{eq:T1-T2dag} gives
+\begin{equation}\label{eq:T1-T2-CS}
+\big|\Tr(\rho H_{\mathrm{hop}}^{(\Lambda)}(\kappa))\big| \le \sqrt{\sum_{x,\sigma}\Tr\!\left(\rho P_{\calV_x} a_{x,\sigma}^\dagger a_{x,\sigma} P_{\calV_x}\right)} \sqrt{A} + \sqrt{\sum_{x,\sigma}\Tr\!\left(\rho P_{\calV_x} a_{x,\sigma} a_{x,\sigma}^\dagger P_{\calV_x}\right)} \sqrt{B},
+\end{equation}
+where $A := \sum_{x,\sigma}\Tr(\rho B_{x,\sigma}^\dagger B_{x,\sigma}) \ge 0$ and $B := \sum_{x,\sigma}\Tr(\rho B_{x,\sigma} B_{x,\sigma}^\dagger) \ge 0$. On the single-occupancy subspace $\calV_x = \mathrm{span}\{|\uparrow\rangle_x, |\downarrow\rangle_x\}$,
+\begin{equation*}
+\sum_{\sigma \in \{\uparrow,\downarrow\}} P_{\calV_x} a_{x,\sigma}^\dagger a_{x,\sigma} P_{\calV_x} = P_{\calV_x}, \qquad \sum_{\sigma \in \{\uparrow,\downarrow\}} P_{\calV_x} a_{x,\sigma} a_{x,\sigma}^\dagger P_{\calV_x} = P_{\calV_x},
+\end{equation*}
+so both first square roots in~\eqref{eq:T1-T2-CS} equal $\sqrt{\sum_x \Tr(\rho P_{\calV_x})} = \sqrt{|\Lambda| r}$. Meanwhile, by canonical anticommutation $\{a_{y,\sigma}, a_{z,\sigma}^\dagger\} = \delta_{y,z}$,
+\begin{equation}\label{eq:A-plus-B}
+A + B = \sum_{x,\sigma} \Tr\!\left(\rho \{B_{x,\sigma}^\dagger, B_{x,\sigma}\}\right) = \sum_{x \in \Lambda} \sum_{\sigma \in \{\uparrow,\downarrow\}} \sum_{y \sim x} |t_{x,y}|^2 = 2 \cdot 6\,\kappa^2\,|\Lambda| = 12\,\kappa^2\,|\Lambda|.
+\end{equation}
+By concavity of the square root, $\sqrt{A} + \sqrt{B} \le \sqrt{2(A+B)} = \sqrt{24\,\kappa^2\,|\Lambda|} = 2\sqrt{6}\,|\kappa|\sqrt{|\Lambda|}$. Multiplying by $\sqrt{|\Lambda|r}$ and dividing by $|\Lambda|$ gives $|e_{\mathrm{hop}}| \le 2\sqrt{6}\,|\kappa|\sqrt{r}$.
+\end{proof}
+
+\subsection{The KLS-weighted infrared sum rule}\label{subsec:kls}
+
+Recall $u_p = \frac{1}{3}\sum_{m=1}^3 \cos p^{(m)} \in [-1, 1]$. For $Q = (\pi,\pi,\pi)$, $\cos(p^{(m)} + \pi) = -\cos p^{(m)}$, so $u_{p+Q} = -u_p$ and the shifted dispersion in Theorem~\ref{thm:rp-gd} is $E_{p+Q} = \sum_{m=1}^3(1 - \cos(p^{(m)} + \pi)) = 3(1 + u_p) \ge 0$, vanishing solely at $p = Q$ where $u_Q = -1$.
+
+\begin{proposition}[KLS-weighted infrared sum rule on the full Fock space]\label{prop:kls}
+For any $\alpha \in [0, 1]$, $g > 0$, $U \in \bbR$, $\kappa \in \bbR$, and $\beta > 0$, in the thermodynamic limit $|\Lambda| \to \infty$ the pair condensate density $m_0^2(\beta)$ defined in~\eqref{eq:m0-def} obeys
+\begin{equation}\label{eq:kls-sumrule}
+m_0^2(\beta) \ge \frac{1}{1 + \alpha}\left[\alpha\bigl(1 - r(\beta)\bigr) + \calE_1(\beta) - \sqrt{J_{\mathrm{sq}}(\alpha)}\sqrt{\calE_1(\beta) + \frac{|e_{\mathrm{hop}}(\beta)|}{6g} + \frac{I_W}{9\beta^2 g^2}}\right],
+\end{equation}
+where $I_W$ and $J_{\mathrm{sq}}(\alpha)$ are defined in~\eqref{eq:IW-def}--\eqref{eq:W3-Jsq-def}.
+\end{proposition}
+
+\begin{proof}
+By Parseval's identity and Lemma~\ref{lem:pair-algebra} Eq.~\eqref{eq:proj-id} ($[\Gamma_x^{(1)}]^2 = I - P_{\calV_x}$), the momentum sums of $\mathfrak{g}_p = \langle \hat{\Gamma}_p^{(1)}\hat{\Gamma}_{-p}^{(1)} \rangle_\beta^{(\Lambda)} \ge 0$ satisfy
+\begin{equation}\label{eq:parseval-sums}
+\begin{aligned}
+\frac{1}{|\Lambda|}\sum_{p \in \Lambda^*} \mathfrak{g}_p &= \frac{1}{|\Lambda|}\sum_{x \in \Lambda} \langle [\Gamma_x^{(1)}]^2 \rangle_\beta^{(\Lambda)} = 1 - r(\beta), \\
+\calE_1(\beta) &= -\frac{1}{3|\Lambda|} \sum_{x \in \Lambda} \sum_{m=1}^3 \langle \Gamma_x^{(1)}\Gamma_{x+e_m}^{(1)} \rangle_\beta^{(\Lambda)} = -\frac{1}{|\Lambda|} \sum_{p \in \Lambda^*} u_p\,\mathfrak{g}_p.
+\end{aligned}
+\end{equation}
+Taking the KLS linear combination~\cite{kennedy1988} $\alpha(1 - r(\beta)) + \calE_1(\beta)$, separating the $p = Q$ term (where $\alpha - u_Q = 1 + \alpha$), and using $\alpha - u_p \le (\alpha - u_p)_+$ with $\mathfrak{g}_p \ge 0$ for $p \ne Q$ yields
+\begin{equation}\label{eq:kls-split}
+\alpha\bigl(1 - r(\beta)\bigr) + \calE_1(\beta) = \frac{1 + \alpha}{|\Lambda|}\mathfrak{g}_Q + \frac{1}{|\Lambda|} \sum_{p \ne Q} (\alpha - u_p)\,\mathfrak{g}_p \le \frac{1 + \alpha}{|\Lambda|}\mathfrak{g}_Q + \frac{1}{|\Lambda|} \sum_{p \ne Q} (\alpha - u_p)_+\,\mathfrak{g}_p.
+\end{equation}
+
+To bound $\mathfrak{g}_p$ for $p \ne Q$, represent $\mathfrak{b}_p$, $\mathfrak{g}_p$, and $\mathfrak{c}_p$ in an eigenbasis $\{|\alpha\rangle\}$ of $H^{(\Lambda)}(0)$ with $x_{\alpha\gamma} := \beta(E_\gamma - E_\alpha)/2$ and non-negative Duhamel weights $w_{\alpha\gamma} := Z_\beta^{(\Lambda)}(0)^{-1}|\langle \alpha|\hat{\Gamma}_p^{(1)}|\gamma\rangle|^2 \frac{e^{-\beta E_\alpha} - e^{-\beta E_\gamma}}{\beta(E_\gamma - E_\alpha)} \ge 0$ (interpreted as $Z^{-1}|\langle \alpha|\hat{\Gamma}_p^{(1)}|\gamma\rangle|^2 e^{-\beta E_\alpha}$ when $E_\gamma = E_\alpha$, with $x\coth x|_{x=0} := 1$): then $\mathfrak{b}_p = \sum_{\alpha,\gamma} w_{\alpha\gamma}$, $\mathfrak{g}_p = \sum_{\alpha,\gamma} w_{\alpha\gamma}\,x_{\alpha\gamma}\coth x_{\alpha\gamma}$, and $\mathfrak{c}_p = \frac{4}{\beta}\sum_{\alpha,\gamma} w_{\alpha\gamma}\,x_{\alpha\gamma}^2$. Since $\sinh^2 x \ge x^2$ for all $x \in \bbR$, $(x\coth x)^2 = x^2(1 + \sinh^{-2} x) \le 1 + x^2$, and the Falk-Bruch / Cauchy-Schwarz inequality~\cite{falk1969,dyson1978} on $w_{\alpha\gamma}$ gives
+\begin{equation}\label{eq:falk-bruch}
+\mathfrak{g}_p^2 \le \left(\sum_{\alpha,\gamma} w_{\alpha\gamma}\right)\left(\sum_{\alpha,\gamma} w_{\alpha\gamma}(1 + x_{\alpha\gamma}^2)\right) = \mathfrak{b}_p^2 + \frac{\beta}{4}\mathfrak{b}_p \mathfrak{c}_p.
+\end{equation}
+For $p \ne Q$, Theorem~\ref{thm:rp-gd} Eq.~\eqref{eq:gd-bp} gives $\mathfrak{b}_p \le (\beta g E_{p+Q})^{-1} = \bigl(3\beta g(1 + u_p)\bigr)^{-1}$. Multiplying~\eqref{eq:falk-bruch} by $1 + u_p > 0$ yields
+\begin{equation*}
+(1 + u_p)\,\mathfrak{g}_p^2 \le \frac{1}{12 g}\mathfrak{c}_p + \frac{1}{9\beta^2 g^2(1 + u_p)}.
+\end{equation*}
+Writing $(\alpha - u_p)_+\,\mathfrak{g}_p = \frac{(\alpha - u_p)_+}{\sqrt{1 + u_p}}\,\sqrt{1 + u_p}\,\mathfrak{g}_p$, applying Cauchy-Schwarz over $p \in \Lambda^* \setminus \{Q\}$, and inserting Lemma~\ref{lem:double-comm} Eq.~\eqref{eq:p-avg-dc} ($\frac{1}{|\Lambda|}\sum_{p \ne Q}\mathfrak{c}_p \le \frac{1}{|\Lambda|}\sum_{p \in \Lambda^*}\mathfrak{c}_p \le 12g\calE_1(\beta) + 2|e_{\mathrm{hop}}(\beta)|$) gives
+\begin{align}
+\frac{1}{|\Lambda|} \sum_{p \ne Q} (\alpha - u_p)_+\,\mathfrak{g}_p &\le \sqrt{\frac{1}{|\Lambda|}\sum_{p \ne Q} \frac{(\alpha - u_p)_+^2}{1 + u_p}} \;\sqrt{\calE_1(\beta) + \frac{|e_{\mathrm{hop}}(\beta)|}{6g} + \frac{1}{9\beta^2 g^2 |\Lambda|} \sum_{p \ne Q} \frac{1}{1 + u_p}} \nonumber\\
+&\xrightarrow{|\Lambda|\to\infty} \sqrt{J_{\mathrm{sq}}(\alpha)}\sqrt{\calE_1(\beta) + \frac{|e_{\mathrm{hop}}(\beta)|}{6g} + \frac{I_W}{9\beta^2 g^2}}. \label{eq:kls-cs-limit}
+\end{align}
+Substituting~\eqref{eq:kls-cs-limit} into~\eqref{eq:kls-split} and dividing by $1 + \alpha > 0$ yields~\eqref{eq:kls-sumrule}.
+\end{proof}
+
+\section{Finite-temperature thermodynamic bounds and proofs of main theorems}\label{sec:thermo}
+
+To convert Proposition~\ref{prop:kls} into a constructive single-shot certificate covering all $\beta \ge \beta_0 = 1/T_0$ simultaneously, we establish four finite-temperature inequalities on $\calF(\Lambda)$.
+
+\subsection{Vacancy-conditioned von Neumann entropy bound}\label{subsec:entropy}
+
+\begin{lemma}[Vacancy-conditioned entropy bound]\label{lem:entropy}
+For any density matrix $\rho$ on $\calF(\Lambda)$ with average single-occupancy density $r := \frac{1}{|\Lambda|}\sum_{x \in \Lambda}\Tr(\rho P_{\calV_x}) \in [0, 1]$, the von Neumann entropy per site $\calS(\rho) := -\frac{1}{|\Lambda|}\Tr(\rho\ln\rho)$ satisfies
+\begin{equation}\label{eq:entropy-bound}
+\calS(\rho) \le \ln 2 + H_2(r), \qquad H_2(r) := -r\ln r - (1-r)\ln(1-r) \in [0, \ln 2].
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By subadditivity of von Neumann entropy across sites $x \in \Lambda$, $\calS(\rho) \le \frac{1}{|\Lambda|}\sum_{x \in \Lambda} S(\rho_x)$, where $\rho_x := \Tr_{\Lambda \setminus \{x\}}(\rho)$ is the four-state reduced density matrix at site $x$. Pinching $\rho_x$ by the orthogonal projectors $P_{\calP_x}$ ($\dim \calP_x = 2$) and $P_{\calV_x}$ ($\dim \calV_x = 2$) cannot decrease von Neumann entropy: setting $r_x := \Tr(\rho_x P_{\calV_x}) \in [0, 1]$,
+\begin{equation}\label{eq:pinching}
+S(\rho_x) \le S\!\left(P_{\calP_x}\rho_x P_{\calP_x} \oplus P_{\calV_x}\rho_x P_{\calV_x}\right) = H_2(r_x) + (1 - r_x) S(\rho_{x,\calP}) + r_x S(\rho_{x,\calV}) \le H_2(r_x) + \ln 2,
+\end{equation}
+where $\rho_{x,\calP}$ and $\rho_{x,\calV}$ are the normalized projections onto the two-dimensional subspaces $\calP_x$ and $\calV_x$ (so $S(\rho_{x,\calP}), S(\rho_{x,\calV}) \le \ln 2$). Averaging~\eqref{eq:pinching} over $x \in \Lambda$ and using concavity of $H_2$ on $[0, 1]$ yields $\frac{1}{|\Lambda|}\sum_x H_2(r_x) \le H_2(r)$, proving~\eqref{eq:entropy-bound}.
+\end{proof}
+
+\subsection{Four-state dimer variational bound}\label{subsec:dimer}
+
+\begin{lemma}[Exact pair-subspace dimer variational bound]\label{lem:dimer}
+Partition the torus $\Lambda$ into $|\Lambda|/2$ disjoint nearest-neighbor dimers $\langle x, y\rangle$ along $e_1$ ($x \in \Lambda_{\mathrm{even}}$, $y = x + e_1 \in \Lambda_{\mathrm{odd}}$). For any real staggered field $h \ge 0$ and $\beta_0 = 1/T_0 > 0$, let $\rho_{\mathrm{dimer}}(\beta_0, h)$ be the normalized Gibbs state $Z_{\mathrm{dimer}}(\beta_0, h)^{-1}\exp(-\beta_0 h_{\mathrm{dimer}}(h))$ on the four-state space $\calP_x \otimes \calP_y \subset \calF_x \otimes \calF_y$ of the dimer Hamiltonian
+\begin{equation}\label{eq:h-dimer}
+h_{\mathrm{dimer}}(h) := \frac{g}{2}\left(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)}\right) - g h\left(\Gamma_x^{(1)} - \Gamma_y^{(1)}\right)\Big|_{\calP_x \otimes \calP_y}.
+\end{equation}
+On $\calP_x \otimes \calP_y = \mathrm{span}\{|0,0\rangle, |0,\uparrow\downarrow\rangle, |\uparrow\downarrow,0\rangle, |\uparrow\downarrow,\uparrow\downarrow\rangle\}$, $h_{\mathrm{dimer}}(h)$ has the four exact eigenvalues
+\begin{equation}\label{eq:dimer-evals}
+E_1 = +g, \qquad E_2 = 0, \qquad E_{3,4}(h) = -g\left(\frac{1}{2} \pm s\right), \qquad s := \sqrt{\frac{1}{4} + 4h^2}.
+\end{equation}
+Let $\rho_{\mathrm{trial}}(\beta_0, h) := \bigotimes_{\langle x, y\rangle} \rho_{\mathrm{dimer}}(\beta_0, h)$ on $\calF(\Lambda)$. Then $\Tr(\rho_{\mathrm{trial}} H_U^{(\Lambda)}) = 0$, $\Tr(\rho_{\mathrm{trial}} H_{\mathrm{hop}}^{(\Lambda)}(\kappa)) = 0$, the trial energy per site is $e(\rho_{\mathrm{trial}}) = F_{\mathrm{dimer}}(\beta_0, h) + \beta_0^{-1}s(\rho_{\mathrm{trial}})$ with $F_{\mathrm{dimer}}(\beta_0, h)$ defined by~\eqref{eq:F-dimer-def}--\eqref{eq:Z4-m1-def}, and $s(\rho_{\mathrm{trial}}) \le \ln 2$. Consequently, for \emph{every} $\beta \ge \beta_0$, the Gibbs state of $H^{(\Lambda)}(g, U, \kappa)$ satisfies
+\begin{equation}\label{eq:dimer-ineq}
+-3 g\,\calE_1(\beta) + \frac{U}{2}\,r(\beta) - |e_{\mathrm{hop}}(\beta)| \le F_{\mathrm{dimer}}(\beta_0, h) + \frac{\ln 2 + H_2(r(\beta))}{\beta_0}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+In the orthonormal symmetric/antisymmetric basis of $\calP_x \otimes \calP_y$,
+\begin{equation*}
+|S_\pm\rangle := \frac{|0,0\rangle \pm |\uparrow\downarrow,\uparrow\downarrow\rangle}{\sqrt{2}}, \qquad |T_\pm\rangle := \frac{|0,\uparrow\downarrow\rangle \pm |\uparrow\downarrow,0\rangle}{\sqrt{2}},
+\end{equation*}
+the action of $\Gamma_x^{(1)} = \Delta_x^\dagger + \Delta_x$ and $\Gamma_x^{(2)} = i(\Delta_x^\dagger - \Delta_x)$ is immediate:
+\begin{itemize}[leftmargin=2em]
+\item On $|T_+\rangle$: $\frac{g}{2}(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)})|T_+\rangle = +g|T_+\rangle$ and $(\Gamma_x^{(1)} - \Gamma_y^{(1)})|T_+\rangle = 0$, giving $E_1 = +g$.
+\item On $|S_+\rangle$: $\Gamma_x^{(1)}\Gamma_y^{(1)}|S_+\rangle = |S_+\rangle$ while $\Gamma_x^{(2)}\Gamma_y^{(2)}|S_+\rangle = -|S_+\rangle$, and $(\Gamma_x^{(1)} - \Gamma_y^{(1)})|S_+\rangle = 0$, so $h_{\mathrm{dimer}}(h)|S_+\rangle = 0$, giving $E_2 = 0$.
+\item On $\mathrm{span}\{|S_-\rangle, |T_-\rangle\}$: $\frac{g}{2}(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)})$ acts as $\diag(0, -g)$ and $-gh(\Gamma_x^{(1)} - \Gamma_y^{(1)})$ has off-diagonal matrix elements $+2gh$, giving the $2 \times 2$ block $g\begin{pmatrix} 0 & 2h \\ 2h & -1 \end{pmatrix}$ with eigenvalues $E_{3,4}(h) = -g\bigl(\frac{1}{2} \pm \sqrt{\frac{1}{4} + 4h^2}\bigr)$.
+\end{itemize}
+Factoring $e^{\beta_0 g e_{\max}}$ ($e_{\max} = \frac{1}{2} + s$) out of $Z_{\mathrm{dimer}}(\beta_0, h) = e^{-\beta_0 E_3} + e^{-\beta_0 E_2} + e^{-\beta_0 E_4} + e^{-\beta_0 E_1}$ gives $Z_{\mathrm{dimer}}(\beta_0, h) = e^{\beta_0 g e_{\max}} Z_4(\beta_0, h)$. Differentiating $\frac{1}{\beta_0 g}\ln Z_{\mathrm{dimer}}(\beta_0, h)$ with respect to $h$ gives
+\begin{equation*}
+\Tr(\rho_{\mathrm{dimer}} \Gamma_x^{(1)}) = -\Tr(\rho_{\mathrm{dimer}} \Gamma_y^{(1)}) = \frac{2h}{s}\,\frac{1 - e^{-2\beta_0 g s}}{Z_4(\beta_0, h)} = m_1(\beta_0, h),
+\end{equation*}
+while $\Tr(\rho_{\mathrm{dimer}}\Gamma_x^{(2)}) = \Tr(\rho_{\mathrm{dimer}}\Gamma_y^{(2)}) = 0$ by reality of $h_{\mathrm{dimer}}(h)$ in the $\{|0\rangle, |\uparrow\downarrow\rangle\}$ basis.
+
+Because $\rho_{\mathrm{trial}}$ has zero support on $\calV_z$ at every site $z \in \Lambda$ and even fermion parity on every site, $\Tr(\rho_{\mathrm{trial}} H_U^{(\Lambda)}) = 0$ and $\Tr(\rho_{\mathrm{trial}} H_{\mathrm{hop}}^{(\Lambda)}(\kappa)) = 0$. Since $\rho_{\mathrm{trial}}$ is a product over disjoint dimers and every site participates in one intra-dimer bond and five inter-dimer bonds (each connecting an even site with expectation $+m_1$ to an odd site with expectation $-m_1$), the five inter-dimer bonds contribute $\frac{5}{2} \cdot \frac{g}{2}(m_1)(-m_1) = -\frac{5}{4}g m_1^2$ per site, while adding back $+gh m_1$ per site removes the auxiliary staggered field from $\frac{1}{2}h_{\mathrm{dimer}}(h)$. Hence the trial free energy per site at $\beta_0$ is $e(\rho_{\mathrm{trial}}) - \beta_0^{-1} s(\rho_{\mathrm{trial}}) = F_{\mathrm{dimer}}(\beta_0, h)$.
+
+Finally, $\rho_{\mathrm{dimer}}(\beta_0, h)$ has rank $4$ on a two-site dimer, so $s(\rho_{\mathrm{trial}}) \le \frac{1}{2}\ln 4 = \ln 2 \le \ln 2 + H_2(r(\beta))$ for all $r(\beta) \in [0, 1]$. Let $\calE_\beta := |\Lambda|^{-1}\langle H^{(\Lambda)}(0)\rangle_\beta^{(\Lambda)} = -3g\calE_1(\beta) + \frac{U}{2}r(\beta) + e_{\mathrm{hop}}(\beta) \ge -3g\calE_1(\beta) + \frac{U}{2}r(\beta) - |e_{\mathrm{hop}}(\beta)|$ and $\calS_\beta := \calS(\rho_\beta)$. By the Gibbs variational principle at any $\beta \ge \beta_0$ together with Lemma~\ref{lem:entropy} and $\calS_\beta - s(\rho_{\mathrm{trial}}) \le \ln 2 + H_2(r(\beta)) - s(\rho_{\mathrm{trial}}) \ge 0$,
+\begin{multline}\label{eq:gibbs-all-beta}
+\calE_\beta \le e(\rho_{\mathrm{trial}}) + \frac{\calS_\beta - s(\rho_{\mathrm{trial}})}{\beta} \\
+\le e(\rho_{\mathrm{trial}}) + \frac{\ln 2 + H_2(r(\beta)) - s(\rho_{\mathrm{trial}})}{\beta_0} = F_{\mathrm{dimer}}(\beta_0, h) + \frac{\ln 2 + H_2(r(\beta))}{\beta_0},
+\end{multline}
+which proves~\eqref{eq:dimer-ineq}.
+\end{proof}
+
+\subsection{Seven-site star bound and vacancy partition bound}\label{subsec:star-vacancy}
+
+\begin{lemma}[Exact seven-site star upper bound on $\calE_1$]\label{lem:star}
+For every state on $\calF(\Lambda)$ with vacancy density $r = \frac{1}{|\Lambda|}\sum_{x \in \Lambda} \langle P_{\calV_x} \rangle \in [0, 1]$, the pair-hopping bond expectation $\calE_1$ defined in~\eqref{eq:E1-def} satisfies
+\begin{equation}\label{eq:star-bound}
+\calE_1 \le \frac{1 - r}{\sqrt{3}}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Rearranging the sum over sites and nearest neighbors $y \sim x$ ($z = 6$ neighbors per site) gives $6\calE_1 = \frac{1}{|\Lambda|}\sum_{x \in \Lambda} \langle \calO_x^{\mathrm{star}} \rangle$, where
+\begin{equation*}
+\calO_x^{\mathrm{star}} := -\frac{1}{2} \sum_{y \sim x} \left(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)}\right).
+\end{equation*}
+On $\calV_x$, $\Gamma_x^{(1)} = \Gamma_x^{(2)} = 0$, so $\calO_x^{\mathrm{star}} P_{\calV_x} = 0$. On $\calP_x$, $S_x^{(a)} := \frac{1}{2}\Gamma_x^{(a)}$ acts as a spin-$1/2$ operator, while $S_{\partial x}^{(a)} := \sum_{y \sim x} \frac{1}{2}\Gamma_y^{(a)}$ ($a \in \{1,2,3\}$) is a sum of six commuting pseudospins on the six neighbors of $x$ (each either spin-$1/2$ on $\calP_y$ or $0$ on $\calV_y$), so the total boundary spin satisfies $S \in \{0, 1, 2, 3\}$. On $\calP_x$ coupled to total boundary spin $S$, $\calO_x^{\mathrm{star}} = -2(S_x^{(1)} S_{\partial x}^{(1)} + S_x^{(2)} S_{\partial x}^{(2)})$ commutes with $S_{\mathrm{tot}}^{(3)} = S_x^{(3)} + S_{\partial x}^{(3)}$. In each $S_{\mathrm{tot}}^{(3)} = M - \frac{1}{2}$ sector connecting $|m_x = -\frac{1}{2}, M\rangle$ and $|m_x = +\frac{1}{2}, M-1\rangle$, $\calO_x^{\mathrm{star}}$ acts as the off-diagonal $2\times 2$ matrix with coupling $-\sqrt{S(S+1) - M(M-1)}$, whose maximum absolute eigenvalue occurs at $S = 3$ and $M = 0$ (or $M=1$) and equals $\sqrt{3(3+1)} = 2\sqrt{3}$. Hence $\calO_x^{\mathrm{star}} \le 2\sqrt{3}\, P_{\calP_x}$, and averaging over $x \in \Lambda$ yields $6\calE_1 \le 2\sqrt{3}(1 - r)$, i.e.,~\eqref{eq:star-bound}.
+\end{proof}
+
+\begin{lemma}[Vacancy density bound at $\kappa = 0$]\label{lem:vacancy}
+At $\kappa = 0$, the Hamiltonian $H^{(\Lambda)}(g, U, 0)$ commutes with $P_{\calV_x}$ at every site $x \in \Lambda$, and for every $\beta > 0$ the thermal vacancy density $r(\beta) = \frac{1}{|\Lambda|}\sum_{x \in \Lambda} \langle P_{\calV_x}\rangle_\beta^{(\Lambda)}$ satisfies
+\begin{equation}\label{eq:r-bound}
+r(\beta) \le \frac{1}{1 + e^{\beta U/2}} \qquad \forall\, U \in \bbR.
+\end{equation}
+In particular, when $U \ge 0$, $r(\beta) \le (1 + e^{\beta_0 U/2})^{-1}$ for all $\beta \ge \beta_0$.
+\end{lemma}
+
+\begin{proof}
+Because $H_{\mathrm{pair}}^{(\Lambda)}$ commutes with $P_{\calV_x}$ for every $x \in \Lambda$ (Lemma~\ref{lem:pair-algebra}), $\exp(-\beta H^{(\Lambda)}(g, U, 0))$ block-diagonalizes over subsets $S \subseteq \Lambda$ of paired sites ($x \in S \leftrightarrow \calP_x$, $x \in \Lambda \setminus S \leftrightarrow \calV_x$):
+\begin{equation}\label{eq:Z-decomp}
+Z_\beta^{(\Lambda)}(0) = \sum_{S \subseteq \Lambda} \bigl(2 e^{-\beta U/2}\bigr)^{|\Lambda \setminus S|} Z_{\mathrm{XY}}(S), \qquad Z_{\mathrm{XY}}(S) := \Tr_{\bigotimes_{y \in S}\calP_y}\!\left(e^{-\beta H_{\mathrm{pair}}(S)}\right),
+\end{equation}
+where $H_{\mathrm{pair}}(S) := \frac{g}{2}\sum_{\langle y, z\rangle \subset S} (\Gamma_y^{(1)}\Gamma_z^{(1)} + \Gamma_y^{(2)}\Gamma_z^{(2)})$ and the factor $2 = \dim \calV_x$ comes from the spin degeneracy $|\uparrow\rangle_x, |\downarrow\rangle_x$ with energy $U/2$ per site in $\Lambda \setminus S$.
+
+Fix any $x \in \Lambda$ and any $S \subseteq \Lambda \setminus \{x\}$. Let $\{|\psi_\alpha\rangle\}$ be an orthonormal eigenbasis of $H_{\mathrm{pair}}(S)$ on $\bigotimes_{y \in S}\calP_y$, and decompose $H_{\mathrm{pair}}(S \cup \{x\}) = H_{\mathrm{pair}}(S) + H_{\mathrm{pair}}(\{x\}, S)$ where $H_{\mathrm{pair}}(\{x\}, S) := \frac{g}{2}\sum_{y \in S, y \sim x}(\Gamma_x^{(1)}\Gamma_y^{(1)} + \Gamma_x^{(2)}\Gamma_y^{(2)})$. On the product basis $\{|\psi_\alpha\rangle \otimes |\sigma_x\rangle\}$ with $\sigma_x \in \{|0\rangle_x, |\uparrow\downarrow\rangle_x\}$ of $\calP_x$, we have $\langle \sigma_x | \Gamma_x^{(a)} | \sigma_x \rangle = 0$ for $a \in \{1, 2\}$, so $\langle \psi_\alpha \otimes \sigma_x | H_{\mathrm{pair}}(\{x\}, S) | \psi_\alpha \otimes \sigma_x \rangle = 0$. By Jensen's inequality (Peierls-Bogoliubov) applied to the convex function $t \mapsto e^{-\beta t}$,
+\begin{equation}\label{eq:ZXY-jensen}
+Z_{\mathrm{XY}}(S \cup \{x\}) = \sum_{\alpha} \sum_{\sigma_x \in \{0, \uparrow\downarrow\}} \langle \psi_\alpha \otimes \sigma_x | e^{-\beta H_{\mathrm{pair}}(S \cup \{x\})} | \psi_\alpha \otimes \sigma_x \rangle \ge \sum_{\alpha} \sum_{\sigma_x \in \{0, \uparrow\downarrow\}} e^{-\beta E_\alpha(S)} = 2 Z_{\mathrm{XY}}(S).
+\end{equation}
+Grouping subsets in~\eqref{eq:Z-decomp} into pairs $(S, S \cup \{x\})$ with $S \subseteq \Lambda \setminus \{x\}$ yields
+\begin{multline*}
+\langle P_{\calV_x} \rangle_\beta^{(\Lambda)} = \frac{\sum_{S \subseteq \Lambda \setminus \{x\}} (2 e^{-\beta U/2})^{|\Lambda \setminus S|} Z_{\mathrm{XY}}(S)}{\sum_{S \subseteq \Lambda \setminus \{x\}} (2 e^{-\beta U/2})^{|\Lambda \setminus (S \cup \{x\})|} \bigl[2 e^{-\beta U/2} Z_{\mathrm{XY}}(S) + Z_{\mathrm{XY}}(S \cup \{x\})\bigr]} \\
+\le \frac{2 e^{-\beta U/2}}{2 e^{-\beta U/2} + 2} = \frac{1}{1 + e^{\beta U/2}}.
+\end{multline*}
+Averaging over $x \in \Lambda$ gives~\eqref{eq:r-bound}. When $U \ge 0$, $(1 + e^{\beta U/2})^{-1}$ decreases monotonically in $\beta$, so $r(\beta) \le (1 + e^{\beta_0 U/2})^{-1}$ for all $\beta \ge \beta_0$.
+\end{proof}
+
+\subsection{Proofs of Theorems~\ref{thm:t0} and~\ref{thm:piflux}}\label{subsec:proof-main}
+
+\begin{proof}[Proof of Theorems~\ref{thm:t0} and~\ref{thm:piflux}]
+Fix $T_0 > 0$ ($\beta_0 = 1/T_0$), $g = J > 0$, $U$, $\kappa$ (with $\kappa = 0$ for Theorem~\ref{thm:t0} and $\kappa \ne 0$, $U \ge 0$ for Theorem~\ref{thm:piflux}), rational trial field $h \ge 0$, and $\alpha \in \{0, 1/2, 3/4, 1\}$. Let $\beta \ge \beta_0$ be arbitrary ($0 < T \le T_0$), and pass to any thermodynamic limit point $(m_0^2(\beta), \calE_1(\beta), \allowbreak e_{\mathrm{hop}}(\beta), r(\beta))$ of the intensive observables~\eqref{eq:m0-def} and~\eqref{eq:E1-def}--\eqref{eq:thermo-defs}.
+
+At $\kappa = 0$, $e_{\mathrm{hop}}(\beta) = 0$ and Lemma~\ref{lem:vacancy} constrains $r(\beta) \in [0, r_{\max}(T_0, U)]$. At $\kappa \ne 0$, Lemma~\ref{lem:hopping} gives $|e_{\mathrm{hop}}(\beta)| \le e_{\mathrm{hop}}^{\mathrm{up}}(r(\beta); \kappa)$ with $r(\beta) \in [0, 1]$. In both cases, Lemma~\ref{lem:dimer} Eq.~\eqref{eq:dimer-ineq}, reflection positivity $\calE_1(\beta) \ge 0$ (Theorem~\ref{thm:rp-gd}), and Lemma~\ref{lem:star} Eq.~\eqref{eq:star-bound} force
+\begin{equation}\label{eq:E1-window}
+\calE_1^{\mathrm{lo}}\bigl(r(\beta)\bigr) \le \calE_1(\beta) \le \calE_1^{\mathrm{hi}}\bigl(r(\beta)\bigr),
+\end{equation}
+so $r(\beta)$ necessarily lies in the admissible set $\mathcal{R}_{\mathrm{adm}}$ where $\calE_1^{\mathrm{lo}}(r) \le \calE_1^{\mathrm{hi}}(r)$.
+
+Since $\beta \ge \beta_0 = 1/T_0$, $\frac{I_W}{9\beta^2 g^2} \le \frac{I_W T_0^2}{9g^2}$, and Proposition~\ref{prop:kls} Eq.~\eqref{eq:kls-sumrule} implies
+\begin{equation}\label{eq:m0-mono-beta}
+m_0^2(\beta) \ge \frac{\alpha(1 - r(\beta)) + \calE_1(\beta) - \sqrt{J_{\mathrm{sq}}(\alpha)\bigl(\calE_1(\beta) + c(r(\beta); T_0, \kappa)\bigr)}}{1 + \alpha},
+\end{equation}
+where $c(r; T_0, 0) = c_0(T_0) = \frac{I_W T_0^2}{9J^2}$. Minimizing the right-hand side of~\eqref{eq:m0-mono-beta} over all admissible pairs $(r, E)$ with $r \in \mathcal{R}_{\mathrm{adm}}$ and $E \in [\calE_1^{\mathrm{lo}}(r), \calE_1^{\mathrm{hi}}(r)]$ establishes $m_0^2(T) \ge m_{\mathrm{floor}}^2 > 0$ uniformly for all $0 < T \le T_0$. Since the function $E \mapsto E - \sqrt{J_{\mathrm{sq}}(\alpha)(E + c)}$ is strictly convex on $[-c, \infty)$ with unique global minimum $E_\alpha^* = \frac{1}{4}J_{\mathrm{sq}}(\alpha) - c$, its minimum over $[E_a, E_b] \subset [0, \infty)$ occurs at $\mathrm{clip}(E_\alpha^*, E_a, E_b)$. Evaluating this clipped minimum across 800 interval bins of $r$ in \texttt{replay.py} certifies every floor in Tables~\ref{tab:t0-floors} and~\ref{tab:piflux-floors}.
+\end{proof}
+
+\section{Obstructions for standard zero-flux real hopping}\label{sec:obstructions}
+
+Consider replacing the $\pi$-flux hopping $H_{\mathrm{hop},\mathrm{FM}}^{(\Lambda)}(\kappa)$ in~\eqref{eq:H-FM} by standard spatially uniform ($0$-flux) real single-electron hopping:
+\begin{equation}\label{eq:H-hop-0flux}
+H_{\mathrm{hop},0}^{(\Lambda)}(t) := -t \sum_{x \in \Lambda} \sum_{m=1}^3 \sum_{\sigma \in \{\uparrow,\downarrow\}} \left(a_{x,\sigma}^\dagger a_{x+e_m,\sigma} + a_{x+e_m,\sigma}^\dagger a_{x,\sigma}\right), \qquad t \in \bbR \setminus \{0\}.
+\end{equation}
+We identify three independent mathematical obstructions showing why the standard rigorous approaches (Majorana reflection positivity, spin reflection positivity, and norm or contour perturbations around $t = 0$) do not yield a positive-temperature pair ODLRO lower bound for $H_{\mathrm{FM}}^{(\Lambda)}(J, U, 0) + H_{\mathrm{hop},0}^{(\Lambda)}(t)$ with $t \ne 0$.
+
+\subsection{Obstruction 1: Gauge-cohomology failure of Majorana reflection positivity}\label{subsec:obs1}
+
+\begin{proposition}[Failure of Majorana RP for $0$-flux real hopping]\label{prop:obs-rp}
+By Theorem~3 of Jaffe and Pedrocchi~\cite{jaffe2015a} (Eqs.~(III.8) and~(VI.8)) and Lieb's flux theorem~\cite{lieb1994,macris1996}, a quadratic Majorana Hamiltonian on a cubic lattice is reflection positive across every coordinate hyperplane $x^{(m)} = 1/2$ ($m=1,2,3$) only if every elementary four-bond plaquette pierced by a reflection plane carries canonical Majorana flux $\pi \pmod{2\pi}$ (product of bond signs $-1$ in the real hopping gauge). Standard $0$-flux real hopping~\eqref{eq:H-hop-0flux} carries flux $0$ on every plaquette, and no local unitary gauge or particle-hole transformation on $\calF(\Lambda)$ alters gauge-invariant plaquette fluxes from $0$ to $\pi$.
+\end{proposition}
+
+\begin{proof}[Algebraic mechanism and finite-plaquette counterexample]
+In Majorana variables~\eqref{eq:majorana-def}, a single real hopping bond equals
+\begin{equation}\label{eq:bond-maj}
+-t(a_{x,\sigma}^\dagger a_{y,\sigma} + a_{y,\sigma}^\dagger a_{x,\sigma}) = -\frac{it}{2}\left(\xi_{x,\sigma}\eta_{y,\sigma} - \eta_{x,\sigma}\xi_{y,\sigma}\right).
+\end{equation}
+Under the anti-linear reflection $\vartheta(\xi_{x,\sigma}) = \xi_{\vartheta(x),\sigma}$, $\vartheta(\eta_{x,\sigma}) = -\eta_{\vartheta(x),\sigma}$ required for $\vartheta(\Gamma_x^{(1)}) = \Gamma_{\vartheta(x)}^{(1)}$, a bond crossing the reflection plane $y = \vartheta(x)$ maps to $+\frac{it}{2}(\xi_{x,\sigma}\vartheta(\eta_{x,\sigma}) + \eta_{x,\sigma}\vartheta(\xi_{x,\sigma}))$, coupling distinct Majorana species ($\xi$ to $\eta$) instead of the reflection-positive diagonal form $-i\kappa_e \gamma_x \vartheta(\gamma_x)$~\cite{jaffe2015a}. Applying $U_{\mathrm{odd}}^{(\Lambda)}$ ($\eta_{y,\sigma} \mapsto -\eta_{y,\sigma}$ on $\Lambda_{\mathrm{odd}}$) and $U_{\mathrm{phase}}^{(\Lambda)}$ converts the bond into $-\frac{it}{2}(\xi_{x,\sigma}\vartheta(\xi_{x,\sigma}) + \eta_{x,\sigma}\vartheta(\eta_{x,\sigma}))$, but on an elementary $2 \times 2$ plaquette $\{0=(0,0), 1=(0,1), 2=(1,0), 3=(1,1)\}$ with uniform signs, the two bonds $(0,2)$ and $(1,3)$ crossing the reflection cut acquire \emph{opposite} signs ($+it/2$ and $-it/2$), violating the uniform-sign condition Eq.~(III.8) of~\cite{jaffe2015a} (where opposite signs already violate reflection positivity on a four-site plaquette, Eq.~(VI.9) of~\cite{jaffe2015a}).
+
+Exact diagonalization on the $2 \times 2$ plaquette ($\dim \calF = 256$) at $J = g = 1$, $U = 1$, $\kappa = t = 0.5$, $\beta = 2.0$ in Section~5 of \texttt{replay.py} confirms this failure quantitatively. Over a $14$-operator basis $\{A_j\} \subset \mathfrak{A}_-$ spanning the identity, single-Majorana operators, onsite pair operators $(\Gamma_x^{(1)}, \Gamma_x^{(2)}, \Gamma_x^{(3)})$, and inter-site quadratic operators supported on $\Lambda_- = \{0, 1\}$, we form the $14 \times 14$ Majorana RP Gram matrix $M_{j,k} := \Tr_{\calF}(A_j \vartheta(A_k) e^{-\beta \tilde{H}})$:
+\begin{itemize}[leftmargin=2em]
+\item For $\pi$-flux hopping (both Koma's AF gauge under $U_{\mathrm{odd}}$ and the FM gauge under $U_{\mathrm{odd}}U_{\mathrm{phase}}$): $M$ is Hermitian ($\|M - M^\dagger\|_{\max} \le 3.33 \times 10^{-16}$) and positive semidefinite ($\lambda_{\min}(M) = -5.78 \times 10^{-17} \ge 0$ and $-1.04 \times 10^{-16} \ge 0$, within roundoff).
+\item For $0$-flux real hopping: $M$ possesses strictly negative eigenvalues,
+\begin{equation}\label{eq:obs-rp-eigs}
+\lambda_{\min}(M_{0\text{-flux}}) = -0.146444 < 0 \quad (U_{\mathrm{odd}}U_{\mathrm{phase}}), \qquad \lambda_{\min}(M_{0\text{-flux}}) = -1.667009 < 0 \quad (U_{\mathrm{odd}}),
+\end{equation}
+explicitly demonstrating that Majorana reflection positivity fails for $0$-flux real hopping.
+\end{itemize}
+\end{proof}
+
+\subsection{Obstruction 2: Inapplicability of spin reflection positivity to spatial infrared bounds}\label{subsec:obs2}
+
+For $0$-flux real hopping $H_{\mathrm{hop},0}^{(\Lambda)}(t)$ and $J = 0$, the attractive ($U > 0$) and repulsive ($U < 0$, via Shiba's partial particle-hole transformation $a_{x,\downarrow} \mapsto (-1)^x a_{x,\downarrow}^\dagger$) Hubbard models satisfy \emph{spin reflection positivity}~\cite{lieb1989,kubo1990}. However, spin reflection reflects across the spin axis ($\calF(\Lambda) = \calF_\uparrow(\Lambda) \otimes \calF_\downarrow(\Lambda)$, exchanging $a_{x,\uparrow} \leftrightarrow a_{x,\downarrow}$) rather than across a spatial hyperplane $\Lambda = \Lambda_- \cup \Lambda_+$. Consequently, introducing a spatially varying source field coupled to $\Gamma_x^{(1)} = \Delta_x^\dagger + \Delta_x$ does not split into a finite-difference gradient $[\Gamma_x^{(1)} - \Gamma_{x+e_m}^{(1)} + h_m(x)]^2$ across a spatial cut. Instead, for repulsive $U < 0$, spin-space Cauchy-Schwarz bounds the pair susceptibility uniformly by the on-site coupling without a spatial Laplacian factor $E_p^{-1}$ (Eq.~(12) of~\cite{kubo1990} and Eq.~(7.16) of~\cite{koma2022}; for attractive $U > 0$, the analogous bound constrains the spin susceptibility):
+\begin{equation*}
+(\hat{\Gamma}_p^{(1)}, \hat{\Gamma}_{-p}^{(1)})_\beta^{(\Lambda)} \le \frac{1}{\beta |U|}.
+\end{equation*}
+This yields an upper bound on pair correlations (ruling out $s$-wave ODLRO for repulsive $U$), not an infrared bound capable of isolating a macroscopic $p = 0$ condensate from $p \ne 0$ fluctuations. Furthermore, when pair hopping $-J\sum_{\langle x,y\rangle}(\Delta_x^\dagger\Delta_y + \text{h.c.})$ is added, each term $\Delta_x^\dagger\Delta_y = -a_{x,\uparrow}^\dagger a_{y,\uparrow} a_{x,\downarrow}^\dagger a_{y,\downarrow}$ carries the sign required for spin reflection positivity only for $J < 0$ (or after Shiba transformation, in a spin-exchange rather than pair-hopping channel; cf.~\cite{goto2026}), and even then still lacks the spatial reflection structure needed for a $1/E_p$ infrared bound.
+
+\subsection{Obstruction 3: Failure of positive-temperature norm and contour perturbations from \texorpdfstring{$t = 0$}{t = 0}}\label{subsec:obs3}
+
+Although Theorem~\ref{thm:t0} establishes $T > 0$ pair ODLRO at $t = 0$, standard perturbative and contour expansions around $t = 0$ fail at $T > 0$ for two structural reasons:
+\begin{enumerate}[label=\arabic*.,leftmargin=2em]
+\item \emph{Volume-divergent operator norm:} The hopping perturbation satisfies $\|H_{\mathrm{hop},0}^{(\Lambda)}(t)\| = O(|t|\,|\Lambda|)$, so a naive Duhamel expansion of $\langle \Delta_x^\dagger \Delta_y \rangle_{\beta,t}^{(\Lambda)}$ around $t = 0$ has radius of convergence $O(|\Lambda|^{-1}) \to 0$ in the thermodynamic limit.
+\item \emph{Gapless Goldstone modes of continuous $U(1)$ symmetry:} Unlike discrete $\bbZ_2$ symmetry breaking where Peierls contours separate gapped phases with positive surface tension (as in the $d = 2$ diluted spin-model coexistence proved by Koteck\'y and Lees~\cite{kotecky2019}), pair ODLRO breaks a continuous $U(1)$ symmetry. Heuristically, by spin-wave theory and Goldstone-mode expectations for continuous symmetry breaking, the ordered phase at $t = 0$ is expected to support gapless collective phase fluctuations with algebraically decaying transverse correlations $\langle \Gamma_x^{(2)}\Gamma_y^{(2)}\rangle_\beta^{\mathrm{conn}} \sim |x - y|^{-(d-2)} = |x - y|^{-1}$ in $d = 3$. Because such slow algebraic decay is non-summable on $\bbZ^3$, standard Pirogov-Sinai contour and high/low-temperature cluster expansions do not apply directly at $T > 0$ without non-perturbative multiscale renormalization-group control.
+\end{enumerate}
+Establishing whether $T > 0$ pair ODLRO persists for $0$-flux real hopping $t \ne 0$ remains open.
+
+\section{Supporting material and disclosures}\label{sec:supp}
+
+\paragraph{Supporting material.}
+The companion replay supplement~\DOI{\suppdoi} contains \texttt{replay.py}, \texttt{mutants.py}, the combined driver \texttt{run\_all.py}, \texttt{README.md}, and \texttt{SHA256SUMS}, which reproduce every interval enclosure, exact algebraic matrix check, finite-cluster exact diagonalization check, and adversarial mutation test reported in this paper. Executing \texttt{run\_all.py} passes all checks in \texttt{replay.py} and rejects all five semantic mutations in \texttt{mutants.py} with exit code $0$.
+
+\paragraph{Use of software and language models.}
+AI tools were used for drafting, calculation and checking under the author's direction and review. All theorems were checked by hand against the proofs, and all numerical claims are reproducible from the scripts in the companion supplement.
+
+\paragraph{Publication status and data availability.}
+This preprint has not been peer reviewed. The archived version of record of this preprint is~\DOI{\paperdoi}, and the accompanying replay supplement is~\DOI{\suppdoi}. Prior related preprints and supplements by the author are~\cite{rens2026eta,rens2026etasupp}.
+
+\appendix
+
+\section{Numerical checks and adversarial mutation suite}\label{app:checks}
+
+All interval enclosures and finite-cluster exact-diagonalization cross-checks are reproduced by the standalone Python scripts \texttt{replay.py} and \texttt{mutants.py} (driven by \texttt{run\_all.py}) in the companion supplement. We summarize here the exact scope of each check so that analytic theorems, 50-digit interval arithmetic, and finite-cluster numerics remain clearly distinguished.
+
+\subsection{Interval-certified enclosures (\texttt{replay.py} Sections 1, 2, and 6)}\label{app:interval}
+
+\begin{itemize}[leftmargin=2em]
+\item \emph{Brillouin-zone integrals (\texttt{replay.py} Section~1):} Using 50-digit \texttt{mpmath.iv} interval arithmetic and exact monotonicity of $\cos k^{(m)}$ and $\sin k^{(m)}$ on $[0, \pi]^3$, $I_W$ is enclosed from Watson's gamma product~\eqref{eq:IW-def}, $W_3(\alpha)$ and $J_{\mathrm{sq}}(\alpha)$ are enclosed via the singularity-subtracted integrals~\eqref{eq:Jsq-sub}--\eqref{eq:W3-sub} over $64^3 = 262{,}144$ sub-boxes, and $I_{\sin}$ is enclosed over $48^3 = 110{,}592$ sub-boxes, producing~\eqref{eq:IW-val}--\eqref{eq:W3-1-val}.
+\item \emph{All-$T \le T_0$ certification (\texttt{replay.py} Section~2):} For each of the 15 rows in Tables~\ref{tab:t0-floors} and~\ref{tab:piflux-floors}, \texttt{certify\_all\_T\_le\_T0} selects a rational trial field $h \ge 0$ (comparing against $h = 0$ and retaining the tighter upper enclosure of $F_{\mathrm{dimer}}(\beta_0, h)$), partitions $r \in [0, r_{\max}]$ into $800$ subintervals, encloses $H_2(r)$, $e_{\mathrm{hop}}^{\mathrm{up}}(r; \kappa)$, $\calE_1^{\mathrm{lo}}(r)$, $\calE_1^{\mathrm{hi}}(r)$, and the convex minimum of~\eqref{eq:mfloor-t0} or~\eqref{eq:mfloor-kap} on each bin, and returns the minimum lower endpoint across all admissible bins.
+\item \emph{Literal formula and table self-check (\texttt{replay.py} Section~6):} Independently evaluates Eqs.~\eqref{eq:E1-bounds-t0}--\eqref{eq:mfloor-t0} and~\eqref{eq:ehop-up}--\eqref{eq:mfloor-kap} directly against all 15 rows of Tables~\ref{tab:t0-floors} and~\ref{tab:piflux-floors} and verifies that each displayed floor equals the strict 5-significant-digit directed rounding down of the interval lower endpoint.
+\end{itemize}
+
+\subsection{Exact finite-Fock-space matrix and ED checks (\texttt{replay.py} Sections 3--5)}\label{app:ed}
+
+\begin{itemize}[leftmargin=2em]
+\item \emph{Exact algebraic identities (\texttt{replay.py} Section~3):} On finite fermion Fock spaces, verifies to machine precision ($< 10^{-12}$): (a) the projector identity~\eqref{eq:proj-id}, Hubbard representation~\eqref{eq:hubbard-id}, and square-completion identity~\eqref{eq:sq-complete}; (b) the Hubbard commutator~\eqref{eq:hubbard-comm}; (c) the on-site and cross-site double commutators~\eqref{eq:cp-U-pair}--\eqref{eq:cross-hop-dc}; (d) exact diagonalization of the 4-state dimer Hamiltonian~\eqref{eq:h-dimer} matching~\eqref{eq:dimer-evals} and~\eqref{eq:F-dimer-def} to $< 10^{-13}$; (e) exact diagonalization of $\calO_x^{\mathrm{star}}$ on both the 14-dimensional $S=3$ sector and the full $2^7 = 128$-state 7-site star Fock space, confirming maximum eigenvalue $2\sqrt{3}$ to $< 10^{-12}$; and (f) the parity-splitting and anticommutation identities~\eqref{eq:T1-T2}--\eqref{eq:A-plus-B} on the 2-site Fock space to Frobenius residual $< 10^{-12}$.
+\item \emph{Four-site ring Duhamel check (\texttt{replay.py} Section~4):} On a 4-site periodic ring ($\dim \calF = 256$), computes the exact Duhamel two-point function~\eqref{eq:bp-def} across $\beta \in \{1.0, 2.0, 5.0\}$ for Koma's $U = 0$ AF model ($\kappa = 0.0, 0.1$) and the $U = 1$ FM model ($\kappa = 0.1$), producing Table~\ref{tab:koma-counter} and verifying the $p$-averaged double-commutator identity~\eqref{eq:p-avg-dc} and the $\{B_{x,\sigma}^\dagger, B_{x,\sigma}\}$ identity~\eqref{eq:A-plus-B}.
+\item \emph{Plaquette Majorana RP Gram matrix test (\texttt{replay.py} Section~5):} On the $2 \times 2$ plaquette ($\dim \calF = 256$), constructs the $14 \times 14$ Gram matrix $M_{j,k}$ and verifies Hermiticity ($\le 3.33 \times 10^{-16}$) and positive semidefiniteness for $\pi$-flux hopping versus the strictly negative eigenvalues~\eqref{eq:obs-rp-eigs} for $0$-flux real hopping.
+\end{itemize}
+
+\subsection{Adversarial mutation suite (\texttt{mutants.py})}\label{app:mutants}
+
+The script \texttt{mutants.py} introduces five deliberate semantic mutations and verifies that each is detected and rejected:
+\begin{enumerate}[leftmargin=2em]
+\item Replacing $\pi$-flux hopping with $0$-flux real hopping on the $2 \times 2$ plaquette triggers a Majorana RP Gram matrix failure ($\lambda_{\min} = -0.146444 < -0.14$).
+\item Flipping the pair coupling $J \to -J$ on the $2 \times 2$ plaquette breaks Majorana RP ($\lambda_{\min} = -1.501184 < -0.15$).
+\item Restoring Koma's uncorrected factor of $2$ in the Gaussian domination bound on the 4-site ring produces a violation ratio $> 1.30 > 1$ in Koma's $U = 0$ AF model ($\kappa = 0.0, 0.1$) and in the $U = 1$ FM model ($\kappa = 0.1$).
+\item Raising the candidate ceiling to $T_0/g = 2.50$ at $U/g = 10$ (above the XY threshold) returns a negative lower bound ($-0.45796 < 0$) from \texttt{certify\_all\_T\_le\_T0}.
+\item Increasing the hopping amplitude to $|\kappa|/g = 1.50$ at $U = 0$, $T_0/g = 0.16$ (outside the certified window) returns a negative lower bound ($-0.6171 < 0$) from \texttt{certify\_all\_T\_le\_T0}.
+\end{enumerate}
+\bibliographystyle{plain}
+\bibliography{refs}
+\end{document}
