@@ -1,4 +1,5 @@
 # Explicit positive-temperature pair long-range order in Penson-Kolb-Hubbard models
+Research record: [Explicit positive-temperature pair long-range order in Penson-Kolb-Hubbard models](https://supermatics.io/research/penson-kolb-pair-odlro).
 
 Davis Rens, SuperMatics Inc., [ORCID 0000-0001-5839-5197](https://orcid.org/0000-0001-5839-5197)
 
